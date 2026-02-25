@@ -11,7 +11,7 @@ export default function HeaderClient({ user }: Props) {
   const [csrfToken, setCsrfToken] = useState<string | null>(null);
 
   useEffect(() => {
-    getCsrfToken().then(setCsrfToken);
+    getCsrfToken().then((token) => setCsrfToken(token ?? null));
   }, []);
 
   return (
