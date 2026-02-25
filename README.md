@@ -79,3 +79,4 @@ NEXTAUTH_SECRET=任意至少32字元的隨機字串
 - 證明審核（人工或 AI）
 - AI Coach（OpenAI API）
 - 訂閱與免費/付費 Refund 規則完整實作
+
