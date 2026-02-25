@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --pk-primary: #0f766e;
+  --pk-accent: #f59e0b;
+  --pk-danger: #dc2626;
+}
+
+body {
+  @apply bg-slate-50 text-slate-900 antialiased;
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center rounded-lg px-4 py-2 font-medium transition;
+  }
+  .btn-primary {
+    @apply btn bg-teal-700 text-white hover:bg-teal-800;
+  }
+  .btn-secondary {
+    @apply btn bg-slate-200 text-slate-800 hover:bg-slate-300;
+  }
+  .btn-danger {
+    @apply btn bg-red-600 text-white hover:bg-red-700;
+  }
+  .card {
+    @apply rounded-xl border border-slate-200 bg-white p-6 shadow-sm;
+  }
+}

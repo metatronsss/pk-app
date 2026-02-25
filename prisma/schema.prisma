@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                    String        @id @default(cuid())
+  email                 String        @unique
+  passwordHash          String?
+  name                  String?
+  image                 String?
+  subscription          String        @default("FREE")
+  balance               Int           @default(0)
+  points                Int           @default(0)
+  stripeCustomerId      String?
+  stripePaymentMethodId String?
+  lastLoginDate         DateTime?
+  consecutiveLoginDays  Int           @default(0)
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  goals                 Goal[]
+  proofs                Proof[]
+  coachProfile          CoachProfile?
+  userItems             UserItem[]
+}
+
+model Goal {
+  id                    String     @id @default(cuid())
+  userId                String
+  user                  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title                 String
+  description           String
+  dueAt                 DateTime
+  penaltyCents          Int
+  status                String     @default("ACTIVE")
+  refundable            Boolean    @default(true)
+  stripePaymentIntentId String?
+  stripeChargeId        String?
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+  proof                 Proof?
+}
+
+model Proof {
+  id         String      @id @default(cuid())
+  goalId     String      @unique
+  goal       Goal        @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type       String
+  url        String
+  status     String      @default("PENDING")
+  reviewedAt DateTime?
+  createdAt  DateTime    @default(now())
+}
+
+model CoachProfile {
+  id             String    @id @default(cuid())
+  userId         String    @unique
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  coachType      String    @default("friend")
+  coachGender    String    @default("male")
+  affinity       Int       @default(0)
+  lastGreetingAt DateTime?
+  unlockedItems  String    @default("[]")
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model ShopItem {
+  id              String    @id @default(cuid())
+  name            String
+  pointsCost      Int
+  affinityRequired Int      @default(0)
+  imageUrl        String?
+  sortOrder       Int       @default(0)
+  createdAt       DateTime  @default(now())
+}
+
+model UserItem {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shopItemId String
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, shopItemId])
+}

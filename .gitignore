@@ -1,0 +1,33 @@
+# dependencies
+node_modules
+.pnp
+.pnp.js
+
+# build
+.next
+out
+build
+dist
+
+# env
+.env
+.env.local
+.env.*.local
+
+# prisma
+prisma/dev.db
+prisma/dev.db-journal
+
+# uploads (user content)
+public/uploads/*
+!public/uploads/.gitkeep
+
+# Capacitor
+ios/App/App/public/
+
+# misc
+.DS_Store
+*.pem
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

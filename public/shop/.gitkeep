@@ -1,0 +1,2 @@
+# 放入五個道具圖：手套、圍巾、皮鞭、帽子、量角器（.png/.jpg/.svg 皆可）
+# 若為 PNG/JPG，執行 node scripts/embed-images-to-svg.mjs 會產生對應 .svg
