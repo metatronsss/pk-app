@@ -43,8 +43,9 @@ export async function POST(request: NextRequest) {
   await prisma.coachProfile.create({
     data: {
       userId: user.id,
-      persona: 'friend',
-      affection: 50,
+      coachType: 'friend',
+      coachGender: 'male',
+      affinity: 0,
       unlockedItems: '[]',
     },
   });
