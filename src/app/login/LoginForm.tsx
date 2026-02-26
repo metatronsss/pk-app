@@ -2,10 +2,9 @@
 
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 export default function LoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') ?? '/dashboard';
   const [email, setEmail] = useState('');
@@ -26,15 +25,14 @@ export default function LoginForm() {
         timeout,
       ]);
       if (res?.error) {
-        setError('Email 或密碼錯誤');
+        setError(res.error === 'CredentialsSignin' ? 'Email 或密碼錯誤' : res.error);
         return;
       }
-      if (res?.ok) {
-        router.push(callbackUrl);
-        router.refresh();
+      if (!res?.error && (res?.ok || res?.url)) {
+        window.location.href = res?.url || callbackUrl;
         return;
       }
-      setError('登入失敗，請稍後再試');
+      setError(res?.error || '登入失敗，請稍後再試');
     } catch (e) {
       setError(e instanceof Error ? e.message : '登入失敗');
     } finally {
