@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { Suspense } from 'react';
 import { getServerSession } from '@/lib/next-auth';
 import { redirect } from 'next/navigation';
 import { authOptions } from '@/lib/auth-options';
@@ -23,7 +24,9 @@ export default async function LoginPage() {
         />
         <h1 className="mt-4 text-2xl font-bold text-slate-800">登入</h1>
       </div>
-      <LoginForm />
+      <Suspense fallback={<div className="card animate-pulse h-48 rounded-lg" />}>
+        <LoginForm />
+      </Suspense>
       <p className="text-center text-sm text-slate-600">
         還沒有帳號？{' '}
         <Link href="/register" className="text-teal-600 hover:underline">

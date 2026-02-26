@@ -9,15 +9,14 @@ export default function PaymentSuccessHandler() {
   const success = searchParams.get('success');
 
   useEffect(() => {
-    if (success === '1' && setupIntent) {
-      fetch('/api/stripe/complete-setup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ setupIntentId: setupIntent }),
-      }).then(() => {
-        window.location.replace('/payment');
-      });
-    }
+    if (success !== '1' || !setupIntent) return;
+    fetch('/api/stripe/complete-setup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ setupIntentId: setupIntent }),
+    })
+      .then(() => window.location.replace('/payment'))
+      .catch(() => {});
   }, [success, setupIntent]);
 
   return null;

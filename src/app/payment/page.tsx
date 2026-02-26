@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { getSessionUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import PaymentForm from './PaymentForm';
@@ -55,7 +56,9 @@ export default async function PaymentPage() {
         </div>
       ) : (
         <>
-          <PaymentSuccessHandler />
+          <Suspense fallback={null}>
+            <PaymentSuccessHandler />
+          </Suspense>
           <PaymentForm />
         </>
       )}
