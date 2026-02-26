@@ -32,6 +32,16 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   session: { strategy: 'jwt', maxAge: 30 * 24 * 60 * 60 },
+  // Stripe 重導向後 session 會遺失，production 用 sameSite: 'none' 讓 cookie 在跨站重導向時仍可傳送
+  cookies: {
+    sessionToken: {
+      name: process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token',
+      options: {
+        sameSite: process.env.NODE_ENV === 'production' ? ('none' as const) : ('lax' as const),
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
+  },
   pages: {
     signIn: '/login',
   },
