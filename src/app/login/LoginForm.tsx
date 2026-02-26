@@ -18,20 +18,26 @@ export default function LoginForm() {
     setError(null);
     setLoading(true);
     try {
-      const res = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
-      });
+      const timeout = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('登入逾時，請檢查網路或稍後再試')), 15000)
+      );
+      const res = await Promise.race([
+        signIn('credentials', { email, password, redirect: false }),
+        timeout,
+      ]);
       if (res?.error) {
         setError('Email 或密碼錯誤');
-        setLoading(false);
         return;
       }
-      router.push(callbackUrl);
-      router.refresh();
-    } catch {
-      setError('登入失敗');
+      if (res?.ok) {
+        router.push(callbackUrl);
+        router.refresh();
+        return;
+      }
+      setError('登入失敗，請稍後再試');
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '登入失敗');
+    } finally {
       setLoading(false);
     }
   };
