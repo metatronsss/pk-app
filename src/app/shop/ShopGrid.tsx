@@ -73,7 +73,7 @@ export default function ShopGrid({
                 </span>
               )}
             </div>
-            <p className="mt-2 text-center text-sm font-medium text-slate-700">
+            <p className="mt-2 text-center text-xs sm:text-sm font-medium text-slate-700 break-words">
               {isLocked ? '? 鎖定中' : item.name}
             </p>
             {!isLocked && (

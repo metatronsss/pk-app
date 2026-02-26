@@ -22,8 +22,8 @@ export default async function GoalsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-800">我的目標</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-800">我的目標</h1>
         <Link href="/goals/new" className="btn-primary">
           新增目標
         </Link>
@@ -44,9 +44,9 @@ export default async function GoalsPage() {
         <ul className="space-y-3">
           {goals.map((g) => (
             <li key={g.id} className="card">
-              <div className="flex items-start justify-between">
-                <div>
-                  <Link href={`/goals/${g.id}`} className="text-lg font-semibold text-teal-800 hover:underline">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                <div className="min-w-0 flex-1">
+                  <Link href={`/goals/${g.id}`} className="text-lg font-semibold text-teal-800 hover:underline break-words">
                     {g.title}
                   </Link>
                   <p className="mt-1 text-sm text-slate-600">{g.description}</p>
@@ -71,7 +71,7 @@ export default async function GoalsPage() {
                   {g.status === 'REFUNDED' && '已退款'}
                 </span>
               </div>
-              <div className="mt-3 flex gap-2">
+              <div className="mt-3 flex flex-wrap gap-2">
                 <Link href={`/goals/${g.id}`} className="btn-secondary text-sm">
                   詳情
                 </Link>

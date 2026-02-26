@@ -34,8 +34,8 @@ export default async function GoalDetailPage({
         ← 回目標列表
       </Link>
       <div className="card">
-        <h1 className="text-2xl font-bold text-slate-800">{goal.title}</h1>
-        <p className="mt-2 text-slate-600">{goal.description}</p>
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-800 break-words">{goal.title}</h1>
+        <p className="mt-2 text-slate-600 break-words">{goal.description}</p>
         <dl className="mt-4 grid gap-2 text-sm">
           <div>
             <dt className="text-slate-500">截止時間</dt>

@@ -8,8 +8,14 @@
   --pk-danger: #dc2626;
 }
 
+html {
+  overflow-x: hidden;
+}
+
 body {
   @apply bg-slate-50 text-slate-900 antialiased;
+  overflow-x: hidden;
+  word-break: break-word;
 }
 
 @layer components {
@@ -26,6 +32,6 @@ body {
     @apply btn bg-red-600 text-white hover:bg-red-700;
   }
   .card {
-    @apply rounded-xl border border-slate-200 bg-white p-6 shadow-sm;
+    @apply rounded-xl border border-slate-200 bg-white p-4 sm:p-6 shadow-sm min-w-0;
   }
 }

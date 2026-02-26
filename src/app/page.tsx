@@ -16,13 +16,13 @@ export default async function HomePage() {
         className="mx-auto rounded-2xl"
         priority
       />
-      <h1 className="text-3xl font-bold text-teal-800">
+      <h1 className="text-2xl sm:text-3xl font-bold text-teal-800 px-2">
         不夠痛 你就不會用
       </h1>
-      <p className="text-lg text-slate-600">
+      <p className="text-base sm:text-lg text-slate-600 px-2 break-words">
         押金 + Refund + AI Coach — 用處罰機制逼自己完成目標，完成就能 100% 拿回。
       </p>
-      <div className="flex justify-center gap-4">
+      <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
         {session ? (
           <>
             <Link href="/dashboard" className="btn-primary">

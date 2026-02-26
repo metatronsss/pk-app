@@ -21,7 +21,7 @@ export default function RootLayout({
       <body>
         <Providers>
           <Header />
-          <main className="mx-auto max-w-4xl px-4 py-8">{children}</main>
+          <main className="mx-auto max-w-4xl px-4 py-6 sm:py-8 overflow-x-hidden">{children}</main>
         </Providers>
       </body>
     </html>

@@ -34,7 +34,7 @@ export default async function CoachPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-slate-800">AI Coach</h1>
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-3 min-w-0">
         <div className="card md:col-span-1 space-y-4">
           <h2 className="font-semibold text-slate-700">教練設定</h2>
           <CoachSettings

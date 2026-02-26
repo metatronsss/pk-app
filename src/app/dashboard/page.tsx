@@ -26,7 +26,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-bold text-slate-800">
+      <h1 className="text-xl sm:text-2xl font-bold text-slate-800 break-words">
         {user.name ? `${user.name}，歡迎回來` : 'Dashboard'}
       </h1>
 
@@ -63,10 +63,10 @@ export default async function DashboardPage() {
             {goals.map((g) => (
               <li
                 key={g.id}
-                className="flex items-center justify-between rounded-lg border border-slate-100 p-3"
+                className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 rounded-lg border border-slate-100 p-3"
               >
-                <div>
-                  <Link href={`/goals/${g.id}`} className="font-medium hover:text-teal-700">
+                <div className="min-w-0 flex-1">
+                  <Link href={`/goals/${g.id}`} className="font-medium hover:text-teal-700 break-words">
                     {g.title}
                   </Link>
                   <p className="text-sm text-slate-500">
@@ -74,7 +74,7 @@ export default async function DashboardPage() {
                   </p>
                 </div>
                 <span
-                  className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                  className={`rounded-full px-2 py-0.5 text-xs font-medium shrink-0 ${
                     g.status === 'ACTIVE'
                       ? 'bg-amber-100 text-amber-800'
                       : g.status === 'COMPLETED'

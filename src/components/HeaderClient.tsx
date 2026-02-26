@@ -14,10 +14,11 @@ export default function HeaderClient({ user }: Props) {
     getCsrfToken().then((token) => setCsrfToken(token ?? null));
   }, []);
 
+  const displayName = user.name ? `Hi, ${user.name}` : (user.email ?? '');
   return (
-    <div className="flex items-center gap-3">
-      <span className="text-sm font-medium text-slate-700">
-        {user.name ? `Hi, ${user.name}` : user.email}
+    <div className="flex items-center gap-3 min-w-0">
+      <span className="text-sm font-medium text-slate-700 truncate max-w-[120px] sm:max-w-none">
+        {displayName}
         <span
           className={`ml-2 rounded-full px-2 py-0.5 text-xs font-medium ${
             user.subscription === 'PAID'
