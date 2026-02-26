@@ -13,6 +13,7 @@ model User {
   passwordHash          String?
   name                  String?
   image                 String?
+  loggedOutAt           DateTime?     // Safari 可能不清除 cookie，用此欄位在伺服器端使 session 失效
   subscription          String        @default("FREE")
   balance               Int           @default(0)
   points                Int           @default(0)

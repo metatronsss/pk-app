@@ -9,7 +9,7 @@ export default function HeaderNav() {
   const [open, setOpen] = useState(false);
   const { data: session, status } = useSession();
 
-  const isLoggedIn = status === 'authenticated' && session?.user;
+  const isLoggedIn = status === 'authenticated' && session?.user?.email;
   const user = isLoggedIn && session?.user
     ? {
         name: session.user.name,

@@ -60,19 +60,18 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string;
-        session.user.email = token.email as string;
-        let sub = token.subscription as string | undefined;
-        if (!sub && token.email) {
-          const u = await prisma.user.findUnique({
-            where: { email: token.email as string },
-            select: { subscription: true },
-          });
-          sub = u?.subscription ?? 'FREE';
-        }
-        session.user.subscription = sub ?? 'FREE';
+      if (!session.user || !token.id) return session;
+      const iat = (token.iat as number) || 0;
+      const dbUser = await prisma.user.findUnique({
+        where: { id: token.id as string },
+        select: { subscription: true, loggedOutAt: true },
+      });
+      if (dbUser?.loggedOutAt && new Date(dbUser.loggedOutAt) > new Date(iat * 1000)) {
+        return { ...session, user: { ...session.user, id: '', email: '', name: null } };
       }
+      session.user.id = token.id as string;
+      session.user.email = token.email as string;
+      session.user.subscription = (dbUser?.subscription ?? token.subscription ?? 'FREE') as string;
       return session;
     },
   },

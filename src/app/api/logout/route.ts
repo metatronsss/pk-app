@@ -1,11 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getToken } from 'next-auth/jwt';
 import { cookies } from 'next/headers';
+import { prisma } from '@/lib/prisma';
 
 /**
- * 登出：清除 session cookie 並導向首頁
- * 重要：Safari 會忽略 302 回應中的 Set-Cookie，故改回 200 + HTML meta refresh
+ * 登出：1) 在 DB 標記 loggedOutAt 2) 清除 cookie 3) 導向首頁
+ * Safari 可能不清除 cookie，故用 DB 在伺服器端使 session 失效
  */
 export async function GET(request: NextRequest) {
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET || (process.env.NODE_ENV === 'development' ? 'dev-secret-at-least-32-characters-long' : undefined),
+  });
+  if (token?.id) {
+    await prisma.user.update({
+      where: { id: token.id as string },
+      data: { loggedOutAt: new Date() },
+    });
+  }
+
   const cookieStore = await cookies();
   const isProd = process.env.NODE_ENV === 'production';
   const prefix = isProd ? '__Secure-' : '';
