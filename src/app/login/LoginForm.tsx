@@ -1,38 +1,50 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { signIn } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
+
+const ERROR_MESSAGES: Record<string, string> = {
+  CredentialsSignin: 'Email 或密碼錯誤',
+  Callback: '登入失敗，請稍後再試',
+  Default: '登入失敗，請稍後再試',
+};
 
 export default function LoginForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') ?? '/dashboard';
+  const errorParam = searchParams.get('error');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (errorParam) {
+      setError(ERROR_MESSAGES[errorParam] ?? ERROR_MESSAGES.Default);
+    }
+  }, [errorParam]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
     try {
-      const timeout = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('登入逾時，請檢查網路或稍後再試')), 15000)
-      );
-      const res = await Promise.race([
-        signIn('credentials', { email, password, redirect: false }),
-        timeout,
-      ]);
+      const res = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+        callbackUrl,
+      });
       if (res?.error) {
         setError(res.error === 'CredentialsSignin' ? 'Email 或密碼錯誤' : res.error);
         return;
       }
-      if (!res?.error && (res?.ok || res?.url)) {
-        window.location.href = res?.url || callbackUrl;
+      if (res?.ok || res?.url) {
+        window.location.href = res?.url ?? callbackUrl;
         return;
       }
-      setError(res?.error || '登入失敗，請稍後再試');
+      setError('登入失敗，請稍後再試');
     } catch (e) {
       setError(e instanceof Error ? e.message : '登入失敗');
     } finally {
