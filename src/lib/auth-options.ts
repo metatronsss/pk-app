@@ -51,6 +51,11 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.email = user.email;
+        const dbUser = await prisma.user.findUnique({
+          where: { email: user.email! },
+          select: { subscription: true },
+        });
+        token.subscription = dbUser?.subscription ?? 'FREE';
       }
       return token;
     },
@@ -58,6 +63,15 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.email = token.email as string;
+        let sub = token.subscription as string | undefined;
+        if (!sub && token.email) {
+          const u = await prisma.user.findUnique({
+            where: { email: token.email as string },
+            select: { subscription: true },
+          });
+          sub = u?.subscription ?? 'FREE';
+        }
+        session.user.subscription = sub ?? 'FREE';
       }
       return session;
     },

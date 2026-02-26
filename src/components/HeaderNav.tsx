@@ -1,17 +1,22 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
+import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import HeaderClient from './HeaderClient';
 
-type Props = {
-  session: { user?: { name?: string | null; email?: string | null } } | null;
-  user: { name?: string | null; email?: string | null; subscription: string } | null;
-};
-
-export default function HeaderNav({ session, user }: Props) {
+export default function HeaderNav() {
   const [open, setOpen] = useState(false);
+  const { data: session, status } = useSession();
+
+  const isLoggedIn = status === 'authenticated' && session?.user;
+  const user = isLoggedIn && session?.user
+    ? {
+        name: session.user.name,
+        email: session.user.email,
+        subscription: (session.user as { subscription?: string }).subscription ?? 'FREE',
+      }
+    : null;
 
   return (
     <>
@@ -33,7 +38,7 @@ export default function HeaderNav({ session, user }: Props) {
 
       {/* Desktop nav */}
       <nav className="hidden md:flex items-center gap-4 flex-wrap">
-        {session ? (
+        {isLoggedIn ? (
           <>
             <Link href="/dashboard" className="text-slate-600 hover:text-teal-700 whitespace-nowrap">Dashboard</Link>
             <Link href="/goals" className="text-slate-600 hover:text-teal-700 whitespace-nowrap">目標</Link>
@@ -54,7 +59,7 @@ export default function HeaderNav({ session, user }: Props) {
       {/* Mobile menu */}
       {open && (
         <nav className="absolute top-14 left-0 right-0 bg-white border-b border-slate-200 shadow-lg md:hidden z-50 py-4 px-4 flex flex-col gap-3">
-          {session ? (
+          {isLoggedIn ? (
             <>
               <Link href="/dashboard" onClick={() => setOpen(false)} className="text-slate-600 hover:text-teal-700 py-2">Dashboard</Link>
               <Link href="/goals" onClick={() => setOpen(false)} className="text-slate-600 hover:text-teal-700 py-2">目標</Link>
