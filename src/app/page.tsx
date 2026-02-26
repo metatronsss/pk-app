@@ -23,7 +23,7 @@ export default async function HomePage() {
         押金 + Refund + AI Coach — 用處罰機制逼自己完成目標，完成就能 100% 拿回。
       </p>
       <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
-        {session ? (
+        {session?.user?.email ? (
           <>
             <Link href="/dashboard" className="btn-primary">
               進入 Dashboard
