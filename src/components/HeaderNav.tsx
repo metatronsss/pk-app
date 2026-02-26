@@ -1,22 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import HeaderClient from './HeaderClient';
 
-export default function HeaderNav() {
-  const [open, setOpen] = useState(false);
-  const { data: session, status } = useSession();
+type Props = {
+  session: { user?: { name?: string | null; email?: string | null } } | null;
+  user: { name?: string | null; email?: string | null; subscription: string } | null;
+};
 
-  const isLoggedIn = status === 'authenticated' && session?.user?.email;
-  const user = isLoggedIn && session?.user
-    ? {
-        name: session.user.name,
-        email: session.user.email,
-        subscription: (session.user as { subscription?: string }).subscription ?? 'FREE',
-      }
-    : null;
+export default function HeaderNav({ session, user }: Props) {
+  const [open, setOpen] = useState(false);
+  const isLoggedIn = !!session?.user?.email;
 
   return (
     <>
