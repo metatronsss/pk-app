@@ -8,9 +8,12 @@ import { prisma } from '@/lib/prisma';
  * Safari 可能不清除 cookie，故用 DB 在伺服器端使 session 失效
  */
 export async function GET(request: NextRequest) {
+  const isProd = process.env.NODE_ENV === 'production';
+  const sessionCookieName = isProd ? '__Secure-next-auth.session-token-v2' : 'next-auth.session-token';
   const token = await getToken({
     req: request,
     secret: process.env.NEXTAUTH_SECRET || (process.env.NODE_ENV === 'development' ? 'dev-secret-at-least-32-characters-long' : undefined),
+    cookieName: sessionCookieName,
   });
   if (token?.id) {
     await prisma.user.update({
@@ -20,9 +23,11 @@ export async function GET(request: NextRequest) {
   }
 
   const cookieStore = await cookies();
-  const isProd = process.env.NODE_ENV === 'production';
   const prefix = isProd ? '__Secure-' : '';
-  const sessionName = `${prefix}next-auth.session-token`;
+  const sessionNames = [
+    `${prefix}next-auth.session-token`,
+    `${prefix}next-auth.session-token-v2`,
+  ];
 
   const origin = request.nextUrl.origin;
   const redirectUrl = origin + '/?_=' + Date.now();
@@ -36,8 +41,8 @@ export async function GET(request: NextRequest) {
   };
 
   const allCookies = cookieStore.getAll();
-  const toClear = allCookies.filter(
-    (c) => c.name === sessionName || c.name.startsWith(sessionName + '.')
+  const toClear = allCookies.filter((c) =>
+    sessionNames.some((n) => c.name === n || c.name.startsWith(n + '.'))
   );
 
   const response = new NextResponse(
@@ -53,7 +58,9 @@ export async function GET(request: NextRequest) {
   for (const c of toClear) {
     response.cookies.set(c.name, '', clearOpts);
   }
-  response.cookies.set(sessionName, '', clearOpts);
+  for (const n of sessionNames) {
+    response.cookies.set(n, '', clearOpts);
+  }
 
   return response;
 }
