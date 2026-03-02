@@ -4,7 +4,7 @@ import { getSessionUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import CoachChat from './CoachChat';
 import CoachSettings from './CoachSettings';
-import { COACH_TYPES, COACH_GENDERS, getGreeting, getCoachImageKey } from '@/lib/coach-dialogue';
+import { COACH_TYPES, COACH_GENDERS, getGreeting, getCoachImageKey, getCoachReminders } from '@/lib/coach-dialogue';
 
 export default async function CoachPage() {
   const user = await getSessionUser();
@@ -16,9 +16,15 @@ export default async function CoachPage() {
     );
   }
 
-  const coach = await prisma.coachProfile.findUnique({
-    where: { userId: user.id },
-  });
+  const [coach, activeGoals] = await Promise.all([
+    prisma.coachProfile.findUnique({ where: { userId: user.id } }),
+    prisma.goal.findMany({
+      where: { userId: user.id, status: 'ACTIVE', proof: null },
+      select: { id: true, title: true, dueAt: true },
+      orderBy: { dueAt: 'asc' },
+    }),
+  ]);
+
   const coachType = (coach?.coachType ?? 'friend') as 'family' | 'friend' | 'lover';
   const coachGender = (coach?.coachGender ?? 'male') as 'male' | 'female';
   const affinity = coach?.affinity ?? 0;
@@ -29,6 +35,10 @@ export default async function CoachPage() {
     : [];
 
   const greeting = getGreeting(coachType, coachGender, affinity);
+  const reminders = getCoachReminders(activeGoals, coachType, coachGender);
+  const initialGreeting = reminders.length > 0
+    ? `${greeting}\n\n${reminders.join('\n\n')}`
+    : greeting;
   const imageSrc = getCoachImageKey(coachType, coachGender);
 
   return (
