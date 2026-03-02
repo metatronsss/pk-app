@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getSessionUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { penalizeOverdueGoals } from '@/lib/penalize';
 import { format } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
 
@@ -14,6 +15,8 @@ export default async function DashboardPage() {
       </div>
     );
   }
+
+  await penalizeOverdueGoals();
 
   const goals = await prisma.goal.findMany({
     where: { userId: user.id },

@@ -9,7 +9,10 @@ import { useState } from 'react';
 const schema = z.object({
   title: z.string().min(1, '請填寫主題'),
   description: z.string().min(1, '請填寫具體描述'),
-  dueAt: z.string().min(1, '請選擇截止時間'),
+  dueAt: z.string().min(1, '請選擇截止時間').refine(
+    (val) => new Date(val) > new Date(),
+    '截止時間不能早於現在'
+  ),
   penaltyUsd: z.number().min(5, '至少 $5').max(100, '最多 $100'),
 });
 
@@ -90,6 +93,11 @@ export default function GoalForm({ userId }: { userId: string }) {
         <input
           type="datetime-local"
           {...register('dueAt')}
+          min={(() => {
+            const d = new Date();
+            const pad = (n: number) => String(n).padStart(2, '0');
+            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+          })()}
           className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
         />
         {errors.dueAt && (

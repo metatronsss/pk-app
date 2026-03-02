@@ -39,6 +39,13 @@ export async function POST(request: NextRequest) {
   }
   const { title, description, dueAt, penaltyCents } = parsed.data;
 
+  if (new Date(dueAt) <= new Date()) {
+    return NextResponse.json(
+      { message: '截止時間不能早於現在' },
+      { status: 400 }
+    );
+  }
+
   const currentMonthGoals = await prisma.goal.count({
     where: {
       userId,

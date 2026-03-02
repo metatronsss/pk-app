@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getSessionUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { penalizeOverdueGoals } from '@/lib/penalize';
 import { format } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
 import RefundButton from './RefundButton';
@@ -20,6 +21,8 @@ export default async function GoalDetailPage({
       </div>
     );
   }
+
+  await penalizeOverdueGoals();
 
   const goal = await prisma.goal.findFirst({
     where: { id, userId: user.id },
