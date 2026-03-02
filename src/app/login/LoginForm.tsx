@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { signIn } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
+import PasswordInput from '@/components/PasswordInput';
 
 const ERROR_MESSAGES: Record<string, string> = {
   CredentialsSignin: 'Email 或密碼錯誤',
@@ -68,16 +69,12 @@ export default function LoginForm() {
           placeholder="you@example.com"
         />
       </div>
-      <div>
-        <label className="block text-sm font-medium text-slate-700">密碼</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
-        />
-      </div>
+      <PasswordInput
+        label="密碼"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
       <button type="submit" disabled={loading} className="btn-primary w-full">
         {loading ? '登入中…' : '登入'}
       </button>

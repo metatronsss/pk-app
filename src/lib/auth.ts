@@ -9,6 +9,7 @@ export type SessionUser = {
   subscription: string;
   balance: number;
   points: number;
+  stripePaymentMethodId: string | null;
 };
 
 export async function getSessionUser(): Promise<SessionUser | null> {
@@ -24,6 +25,7 @@ export async function getSessionUser(): Promise<SessionUser | null> {
       subscription: true,
       balance: true,
       points: true,
+      stripePaymentMethodId: true,
     },
   });
   if (!user) return null;
@@ -35,6 +37,7 @@ export async function getSessionUser(): Promise<SessionUser | null> {
     subscription: user.subscription,
     balance: user.balance,
     points: user.points,
+    stripePaymentMethodId: user.stripePaymentMethodId,
   };
 }
 

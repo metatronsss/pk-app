@@ -68,6 +68,13 @@ export async function POST(request: NextRequest) {
     select: { stripeCustomerId: true, stripePaymentMethodId: true },
   });
 
+  if (isStripeEnabled && (!user?.stripePaymentMethodId || !user?.stripeCustomerId)) {
+    return NextResponse.json(
+      { message: '請先綁定信用卡才能建立目標' },
+      { status: 400 }
+    );
+  }
+
   let stripePaymentIntentId: string | null = null;
 
   if (isStripeEnabled && stripe && user?.stripePaymentMethodId && user?.stripeCustomerId) {

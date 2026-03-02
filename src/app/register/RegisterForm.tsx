@@ -3,11 +3,13 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import PasswordInput from '@/components/PasswordInput';
 
 export default function RegisterForm() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
   const [name, setName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -15,6 +17,10 @@ export default function RegisterForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    if (password !== passwordConfirm) {
+      setError('兩次輸入的密碼不一致');
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch('/api/auth/register', {
@@ -52,17 +58,20 @@ export default function RegisterForm() {
           placeholder="you@example.com"
         />
       </div>
-      <div>
-        <label className="block text-sm font-medium text-slate-700">密碼（至少 6 碼）</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          minLength={6}
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
-        />
-      </div>
+      <PasswordInput
+        label="密碼（至少 6 碼）"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+        minLength={6}
+      />
+      <PasswordInput
+        label="再次輸入密碼"
+        value={passwordConfirm}
+        onChange={(e) => setPasswordConfirm(e.target.value)}
+        required
+        minLength={6}
+      />
       <div>
         <label className="block text-sm font-medium text-slate-700">名稱（選填）</label>
         <input

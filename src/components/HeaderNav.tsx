@@ -7,6 +7,7 @@ import HeaderClient from './HeaderClient';
 type Props = {
   session: { user?: { name?: string | null; email?: string | null } } | null;
   user: { name?: string | null; email?: string | null; subscription: string } | null;
+  hasCoachReminder?: boolean;
 };
 
 function CoachLink({ hasReminder }: { hasReminder?: boolean }) {
