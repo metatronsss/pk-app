@@ -2,6 +2,10 @@
   "name": "pk-app",
   "version": "0.1.0",
   "private": true,
+  "overrides": {
+    "glob": "^10.4.5",
+    "rimraf": "^4.4.1"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
