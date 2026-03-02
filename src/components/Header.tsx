@@ -3,11 +3,25 @@ import Image from 'next/image';
 import { getServerSession } from '@/lib/next-auth';
 import { authOptions } from '@/lib/auth-options';
 import { getSessionUser } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+import { penalizeOverdueGoals } from '@/lib/penalize';
+import { hasCoachReminders } from '@/lib/coach-reminder';
 import HeaderNav from './HeaderNav';
 
 export default async function Header() {
   const session = await getServerSession(authOptions);
   const user = await getSessionUser();
+
+  let hasCoachReminder = false;
+  if (user) {
+    await penalizeOverdueGoals();
+    const activeGoals = await prisma.goal.findMany({
+      where: { userId: user.id, status: 'ACTIVE', proof: null },
+      select: { dueAt: true },
+    });
+    hasCoachReminder = hasCoachReminders(activeGoals);
+  }
+
   return (
     <header className="relative border-b border-slate-200 bg-white">
       <div className="mx-auto flex h-14 max-w-4xl items-center justify-between px-4">
@@ -18,6 +32,7 @@ export default async function Header() {
         <HeaderNav
           session={session}
           user={user ? { name: user.name, email: user.email, subscription: user.subscription ?? 'FREE' } : null}
+          hasCoachReminder={hasCoachReminder}
         />
       </div>
     </header>

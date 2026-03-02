@@ -9,7 +9,21 @@ type Props = {
   user: { name?: string | null; email?: string | null; subscription: string } | null;
 };
 
-export default function HeaderNav({ session, user }: Props) {
+function CoachLink({ hasReminder }: { hasReminder?: boolean }) {
+  return (
+    <Link href="/coach" className="text-slate-600 hover:text-teal-700 whitespace-nowrap relative inline-flex items-center">
+      Coach
+      {hasReminder && (
+        <span className="absolute -top-1 -right-2 flex h-3.5 w-3.5" aria-label="有提醒">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+          <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500 text-[10px] text-white items-center justify-center font-bold">!</span>
+        </span>
+      )}
+    </Link>
+  );
+}
+
+export default function HeaderNav({ session, user, hasCoachReminder }: Props) {
   const [open, setOpen] = useState(false);
   const isLoggedIn = !!session?.user?.email;
 
@@ -37,7 +51,7 @@ export default function HeaderNav({ session, user }: Props) {
           <>
             <Link href="/dashboard" className="text-slate-600 hover:text-teal-700 whitespace-nowrap">Dashboard</Link>
             <Link href="/goals" className="text-slate-600 hover:text-teal-700 whitespace-nowrap">目標</Link>
-            <Link href="/coach" className="text-slate-600 hover:text-teal-700 whitespace-nowrap">Coach</Link>
+            <CoachLink hasReminder={hasCoachReminder} />
             <Link href="/shop" className="text-slate-600 hover:text-teal-700 whitespace-nowrap">商城</Link>
             <Link href="/payment" className="text-slate-600 hover:text-teal-700 whitespace-nowrap">付款</Link>
             <Link href="/subscription" className="text-slate-600 hover:text-teal-700 whitespace-nowrap">訂閱</Link>
@@ -58,7 +72,10 @@ export default function HeaderNav({ session, user }: Props) {
             <>
               <Link href="/dashboard" onClick={() => setOpen(false)} className="text-slate-600 hover:text-teal-700 py-2">Dashboard</Link>
               <Link href="/goals" onClick={() => setOpen(false)} className="text-slate-600 hover:text-teal-700 py-2">目標</Link>
-              <Link href="/coach" onClick={() => setOpen(false)} className="text-slate-600 hover:text-teal-700 py-2">Coach</Link>
+              <Link href="/coach" onClick={() => setOpen(false)} className="text-slate-600 hover:text-teal-700 py-2 flex items-center gap-1" title={hasCoachReminder ? 'Coach 有提醒' : undefined}>
+              Coach
+              {hasCoachReminder && <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white">!</span>}
+            </Link>
               <Link href="/shop" onClick={() => setOpen(false)} className="text-slate-600 hover:text-teal-700 py-2">商城</Link>
               <Link href="/payment" onClick={() => setOpen(false)} className="text-slate-600 hover:text-teal-700 py-2">付款方式</Link>
               <Link href="/subscription" onClick={() => setOpen(false)} className="text-slate-600 hover:text-teal-700 py-2">訂閱方案</Link>

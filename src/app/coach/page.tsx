@@ -71,7 +71,7 @@ export default async function CoachPage() {
             coachType={coachType}
             coachGender={coachGender}
             affinity={affinity}
-            initialGreeting={greeting}
+            initialGreeting={initialGreeting}
           />
         </div>
       </div>

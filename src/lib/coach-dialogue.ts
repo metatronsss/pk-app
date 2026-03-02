@@ -63,3 +63,78 @@ const COACH_IMG_EXT = '.svg';
 export function getCoachImageKey(coachType: CoachType, coachGender: CoachGender): string {
   return `/coach/${coachType}_${coachGender}${COACH_IMG_EXT}`;
 }
+
+/** 目標提醒用語（依形象區分） */
+const REMINDER_TEMPLATES: Record<CoachType, Record<CoachGender, Record<string, string>>> = {
+  family: {
+    male: {
+      week: '提醒你：目標「{title}」一週後（{date}）截止，記得完成並上傳證明喔。',
+      threeDays: '目標「{title}」三天後（{date}）截止，別忘了上傳證明，家人會以你為榮！',
+      today: '今天就是目標「{title}」的截止日！快去上傳證明，避免被扣款喔。',
+    },
+    female: {
+      week: '提醒你：目標「{title}」一週後（{date}）截止，記得完成並上傳證明。',
+      threeDays: '目標「{title}」三天後（{date}）截止，記得去上傳證明喔。',
+      today: '今天目標「{title}」就截止了！快去上傳證明吧。',
+    },
+  },
+  friend: {
+    male: {
+      week: '嘿！目標「{title}」一週後（{date}）截止，別拖到最後一天喔。',
+      threeDays: '目標「{title}」三天後（{date}）截止，記得去上傳證明，完成就能拿回押金！',
+      today: '今天目標「{title}」就截止了！快去上傳證明，不然會被扣款喔。',
+    },
+    female: {
+      week: '提醒你～目標「{title}」一週後（{date}）截止，記得完成喔。',
+      threeDays: '目標「{title}」三天後（{date}）截止，快去上傳證明拿回押金吧！',
+      today: '今天目標「{title}」截止日！別忘了上傳證明喔。',
+    },
+  },
+  lover: {
+    male: {
+      week: '目標「{title}」一週後（{date}）截止，完成的話我會很開心喔。',
+      threeDays: '目標「{title}」三天後（{date}）截止，記得去上傳證明，完成我會更喜歡你～',
+      today: '今天目標「{title}」就截止了！快去上傳證明，不然會被扣款喔。',
+    },
+    female: {
+      week: '目標「{title}」一週後（{date}）截止，完成的話我會很開心喔。',
+      threeDays: '目標「{title}」三天後（{date}）截止，記得去上傳證明喔～',
+      today: '今天目標「{title}」截止日！快去上傳證明吧。',
+    },
+  },
+};
+
+type GoalForReminder = { id: string; title: string; dueAt: Date };
+
+/**
+ * 依目標截止日產生 Coach 提醒訊息（一週前、三天前、當日）
+ * 當日 = 今天截止；三天前 = 3 天後截止；一週前 = 7 天後截止
+ */
+export function getCoachReminders(
+  goals: GoalForReminder[],
+  coachType: CoachType,
+  coachGender: CoachGender
+): string[] {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const t = REMINDER_TEMPLATES[coachType][coachGender];
+  const reminders: string[] = [];
+
+  for (const g of goals) {
+    const due = new Date(g.dueAt);
+    due.setHours(0, 0, 0, 0);
+    const dateStr = due.toLocaleDateString('zh-TW', { month: 'long', day: 'numeric' });
+
+    const daysUntil = Math.round((due.getTime() - today.getTime()) / (24 * 60 * 60 * 1000));
+    if (daysUntil === 0) {
+      reminders.push(t.today.replace('{title}', g.title).replace('{date}', dateStr));
+    } else if (daysUntil === 3) {
+      reminders.push(t.threeDays.replace('{title}', g.title).replace('{date}', dateStr));
+    } else if (daysUntil === 7) {
+      reminders.push(t.week.replace('{title}', g.title).replace('{date}', dateStr));
+    }
+  }
+
+  return reminders;
+}

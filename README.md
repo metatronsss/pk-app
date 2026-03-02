@@ -56,15 +56,15 @@ NEXTAUTH_SECRET=任意至少32字元的隨機字串
 
 **注意**：測試模式不會扣真實金額，請用 Stripe 提供的測試卡號。
 
-## 模擬處罰（逾期未完成）
+## 逾期處罰（on-demand）
 
-若未設定 Stripe，或使用模擬模式。要觸發「逾期未上傳 → 處罰」：
+逾期未上傳證明的目標會在使用者「進入任一頁面」或「上傳證明」時，於背景執行 penalize，標記為 FAILED 並扣款。不需定時 cron。
 
-1. 手動呼叫：`POST /api/cron/penalize`（無 body）
-2. 會將所有「ACTIVE、已過 dueAt、無證明」的目標改為 FAILED，並把 `penaltyCents` 加入該用戶的 `balance`
-3. 之後用戶可在目標詳情對 FAILED 目標點「補完成並申請退款」（需符合免費/訂閱規則）
+手動觸發（可選）：`POST /api/cron/penalize`。若有設定 `CRON_SECRET`，需帶 `Authorization: Bearer CRON_SECRET`。
 
-正式版可改為 Vercel Cron 或外部排程，並加 API key 驗證。
+## Coach 提醒
+
+若目標將在「一週後」「三天後」或「當日」截止，上方導覽列 Coach 連結會顯示 **!** 徽章，提示使用者點擊查看 Coach 的提醒訊息。
 
 ## 專案結構
 

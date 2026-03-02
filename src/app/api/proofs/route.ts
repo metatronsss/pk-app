@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getSessionUserId } from '@/lib/auth';
+import { penalizeOverdueGoals } from '@/lib/penalize';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 import { stripe, isStripeEnabled } from '@/lib/stripe';
@@ -48,6 +49,8 @@ export async function POST(request: NextRequest) {
       );
     }
   }
+
+  await penalizeOverdueGoals();
 
   const goal = await prisma.goal.findFirst({
     where: { id: goalId, userId },
