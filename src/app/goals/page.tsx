@@ -15,8 +15,6 @@ export default async function GoalsPage() {
     );
   }
 
-  await penalizeOverdueGoals();
-
   const goals = await prisma.goal.findMany({
     where: { userId: user.id },
     orderBy: { dueAt: 'desc' },
@@ -83,9 +81,9 @@ export default async function GoalsPage() {
                     編輯
                   </Link>
                 )}
-                {g.status === 'ACTIVE' && !g.proof && (
+                {(g.status === 'ACTIVE' || g.status === 'FAILED') && !g.proof && (
                   <Link href={`/goals/${g.id}/proof`} className="btn-primary text-sm">
-                    上傳證明
+                    {g.status === 'FAILED' ? '上傳證明並退款' : '上傳證明'}
                   </Link>
                 )}
               </div>

@@ -25,7 +25,7 @@ export default async function ProofUploadPage({
   });
 
   if (!goal) notFound();
-  if (goal.status !== 'ACTIVE') {
+  if (goal.status !== 'ACTIVE' && goal.status !== 'FAILED') {
     return (
       <div className="card">
         <p>此目標已結束，無法上傳證明。</p>

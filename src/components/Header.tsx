@@ -14,7 +14,6 @@ export default async function Header() {
 
   let hasCoachReminder = false;
   if (user) {
-    await penalizeOverdueGoals();
     const activeGoals = await prisma.goal.findMany({
       where: { userId: user.id, status: 'ACTIVE', proof: null },
       select: { dueAt: true },

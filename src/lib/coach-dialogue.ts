@@ -70,11 +70,13 @@ const REMINDER_TEMPLATES: Record<CoachType, Record<CoachGender, Record<string, s
     male: {
       week: '提醒你：目標「{title}」一週後（{date}）截止，記得完成並上傳證明喔。',
       threeDays: '目標「{title}」三天後（{date}）截止，別忘了上傳證明，家人會以你為榮！',
+      tomorrow: '目標「{title}」明天（{date}）截止！快去上傳證明。',
       today: '今天就是目標「{title}」的截止日！快去上傳證明，避免被扣款喔。',
     },
     female: {
       week: '提醒你：目標「{title}」一週後（{date}）截止，記得完成並上傳證明。',
       threeDays: '目標「{title}」三天後（{date}）截止，記得去上傳證明喔。',
+      tomorrow: '目標「{title}」明天（{date}）截止！別忘了上傳證明。',
       today: '今天目標「{title}」就截止了！快去上傳證明吧。',
     },
   },
@@ -82,11 +84,13 @@ const REMINDER_TEMPLATES: Record<CoachType, Record<CoachGender, Record<string, s
     male: {
       week: '嘿！目標「{title}」一週後（{date}）截止，別拖到最後一天喔。',
       threeDays: '目標「{title}」三天後（{date}）截止，記得去上傳證明，完成就能拿回押金！',
+      tomorrow: '目標「{title}」明天截止！快去上傳證明，完成就能拿回押金。',
       today: '今天目標「{title}」就截止了！快去上傳證明，不然會被扣款喔。',
     },
     female: {
       week: '提醒你～目標「{title}」一週後（{date}）截止，記得完成喔。',
       threeDays: '目標「{title}」三天後（{date}）截止，快去上傳證明拿回押金吧！',
+      tomorrow: '目標「{title}」明天截止！記得去上傳證明喔。',
       today: '今天目標「{title}」截止日！別忘了上傳證明喔。',
     },
   },
@@ -94,11 +98,13 @@ const REMINDER_TEMPLATES: Record<CoachType, Record<CoachGender, Record<string, s
     male: {
       week: '目標「{title}」一週後（{date}）截止，完成的話我會很開心喔。',
       threeDays: '目標「{title}」三天後（{date}）截止，記得去上傳證明，完成我會更喜歡你～',
+      tomorrow: '目標「{title}」明天截止！快去上傳證明喔。',
       today: '今天目標「{title}」就截止了！快去上傳證明，不然會被扣款喔。',
     },
     female: {
       week: '目標「{title}」一週後（{date}）截止，完成的話我會很開心喔。',
       threeDays: '目標「{title}」三天後（{date}）截止，記得去上傳證明喔～',
+      tomorrow: '目標「{title}」明天截止！快去上傳證明吧。',
       today: '今天目標「{title}」截止日！快去上傳證明吧。',
     },
   },
@@ -129,6 +135,8 @@ export function getCoachReminders(
     const daysUntil = Math.round((due.getTime() - today.getTime()) / (24 * 60 * 60 * 1000));
     if (daysUntil === 0) {
       reminders.push(t.today.replace('{title}', g.title).replace('{date}', dateStr));
+    } else if (daysUntil === 1) {
+      reminders.push(t.tomorrow.replace('{title}', g.title).replace('{date}', dateStr));
     } else if (daysUntil === 3) {
       reminders.push(t.threeDays.replace('{title}', g.title).replace('{date}', dateStr));
     } else if (daysUntil === 7) {

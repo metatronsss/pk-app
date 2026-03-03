@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Providers } from './providers';
 import Header from '@/components/Header';
+import PenalizeTrigger from '@/components/PenalizeTrigger';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,6 +21,7 @@ export default function RootLayout({
     <html lang="zh-Hant">
       <body>
         <Providers>
+          <PenalizeTrigger />
           <Header />
           <main className="mx-auto max-w-4xl px-4 py-6 sm:py-8 overflow-x-hidden">{children}</main>
         </Providers>

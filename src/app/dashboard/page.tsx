@@ -1,11 +1,14 @@
 import Link from 'next/link';
+import { unstable_noStore } from 'next/cache';
 import { getSessionUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { penalizeOverdueGoals } from '@/lib/penalize';
 import { format } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
 
+export const dynamic = 'force-dynamic';
+
 export default async function DashboardPage() {
+  unstable_noStore();
   const user = await getSessionUser();
 
   if (!user) {
@@ -16,8 +19,6 @@ export default async function DashboardPage() {
     );
   }
 
-  await penalizeOverdueGoals();
-
   const goals = await prisma.goal.findMany({
     where: { userId: user.id },
     orderBy: { dueAt: 'asc' },
@@ -25,7 +26,13 @@ export default async function DashboardPage() {
   });
 
   const activeGoals = goals.filter((g) => g.status === 'ACTIVE');
-  const balanceUsd = (user.balance / 100).toFixed(2);
+  const failedRefundable = goals.filter((g) => g.status === 'FAILED' && g.refundable);
+  const refundableCents =
+    user.balance +
+    failedRefundable
+      .filter((g) => g.stripeChargeId)
+      .reduce((sum, g) => sum + g.penaltyCents, 0);
+  const balanceUsd = (refundableCents / 100).toFixed(2);
 
   return (
     <div className="space-y-8">
@@ -35,7 +42,7 @@ export default async function DashboardPage() {
 
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="card">
-          <p className="text-sm text-slate-500">可退金額（已處罰）</p>
+          <p className="text-sm text-slate-500">已處罰金額（可退）</p>
           <p className="text-2xl font-bold text-teal-700">$ {balanceUsd} USD</p>
           <Link href="/goals?filter=failed" className="mt-2 text-sm text-teal-600 hover:underline">
             完成目標拿回 →

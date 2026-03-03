@@ -2,10 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getSessionUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { penalizeOverdueGoals } from '@/lib/penalize';
 import { format } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
-import RefundButton from './RefundButton';
 
 export default async function GoalDetailPage({
   params,
@@ -21,8 +19,6 @@ export default async function GoalDetailPage({
       </div>
     );
   }
-
-  await penalizeOverdueGoals();
 
   const goal = await prisma.goal.findFirst({
     where: { id, userId: user.id },
@@ -97,13 +93,10 @@ export default async function GoalDetailPage({
               編輯主題與描述
             </Link>
           )}
-          {goal.status === 'ACTIVE' && !goal.proof && (
+          {(goal.status === 'ACTIVE' || goal.status === 'FAILED') && !goal.proof && (
             <Link href={`/goals/${goal.id}/proof`} className="btn-primary">
-              上傳證明
+              {goal.status === 'FAILED' ? '上傳證明並申請退款' : '上傳證明'}
             </Link>
-          )}
-          {goal.status === 'FAILED' && goal.refundable && (
-            <RefundButton goalId={goal.id} />
           )}
         </div>
       </div>

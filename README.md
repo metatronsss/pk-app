@@ -33,6 +33,8 @@ NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_SECRET=任意至少32字元的隨機字串
 ```
 
+**本地 vs 部署**：`.env` 只在本機使用（不進 git）。Vercel 的變數在專案 Settings → Environment Variables 設定，各自獨立。本機測試時 `NEXTAUTH_URL` 務必為 `http://localhost:3000`，否則登入後會顯示「請先登入」。
+
 （開發時若未設定，會使用預設 dev secret；正式環境務必自訂 NEXTAUTH_SECRET）
 
 瀏覽 [http://localhost:3000](http://localhost:3000)，可先註冊帳號，再登入進入 Dashboard。

@@ -9,7 +9,7 @@ export function hasCoachReminders(goals: { dueAt: Date }[]): boolean {
     const due = new Date(g.dueAt);
     due.setHours(0, 0, 0, 0);
     const daysUntil = Math.round((due.getTime() - today.getTime()) / (24 * 60 * 60 * 1000));
-    if (daysUntil === 0 || daysUntil === 3 || daysUntil === 7) return true;
+    if (daysUntil === 0 || daysUntil === 1 || daysUntil === 3 || daysUntil === 7) return true;
   }
   return false;
 }

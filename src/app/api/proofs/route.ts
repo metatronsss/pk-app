@@ -4,7 +4,8 @@ import { getSessionUserId } from '@/lib/auth';
 import { penalizeOverdueGoals } from '@/lib/penalize';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
-import { stripe, isStripeEnabled } from '@/lib/stripe';
+import { startOfMonth, subMonths } from 'date-fns';
+import { stripe, isStripeEnabled, toStripeAmount } from '@/lib/stripe';
 import { affinityGainFromGoalCompletion, clampAffinity } from '@/lib/affinity';
 
 export async function POST(request: NextRequest) {
@@ -59,11 +60,55 @@ export async function POST(request: NextRequest) {
   if (!goal) {
     return NextResponse.json({ message: '目標不存在' }, { status: 404 });
   }
-  if (goal.status !== 'ACTIVE') {
+  if (goal.status !== 'ACTIVE' && goal.status !== 'FAILED') {
     return NextResponse.json({ message: '目標已結束' }, { status: 400 });
   }
   if (goal.proof) {
     return NextResponse.json({ message: '已上傳過證明' }, { status: 400 });
+  }
+
+  const isFailed = goal.status === 'FAILED';
+
+  if (isFailed) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { subscription: true, balance: true },
+    });
+    if (!user) {
+      return NextResponse.json({ message: '用戶不存在' }, { status: 404 });
+    }
+    const now = new Date();
+    const lastMonthStart = startOfMonth(subMonths(now, 1));
+    const lastMonthEnd = startOfMonth(now);
+    const isLastMonth = goal.dueAt >= lastMonthStart && goal.dueAt < lastMonthEnd;
+    if (user.subscription === 'FREE' && !isLastMonth) {
+      return NextResponse.json(
+        { message: '免費用戶僅能退上個月遞延目標的款' },
+        { status: 400 }
+      );
+    }
+    if (isStripeEnabled && stripe && goal.stripeChargeId) {
+      try {
+        await stripe.refunds.create({
+          charge: goal.stripeChargeId,
+          amount: toStripeAmount(goal.penaltyCents),
+        });
+      } catch (e: unknown) {
+        const err = e as { message?: string };
+        return NextResponse.json(
+          { message: err.message ?? 'Stripe 退款失敗' },
+          { status: 500 }
+        );
+      }
+    } else if (!goal.stripeChargeId) {
+      if (user.balance < goal.penaltyCents) {
+        return NextResponse.json({ message: '餘額不足，無法退款' }, { status: 400 });
+      }
+      await prisma.user.update({
+        where: { id: userId },
+        data: { balance: { decrement: goal.penaltyCents } },
+      });
+    }
   }
 
   const proof = await prisma.proof.create({
@@ -77,7 +122,7 @@ export async function POST(request: NextRequest) {
     },
   });
 
-  if (isStripeEnabled && stripe && goal.stripePaymentIntentId) {
+  if (!isFailed && isStripeEnabled && stripe && goal.stripePaymentIntentId) {
     try {
       await stripe.paymentIntents.cancel(goal.stripePaymentIntentId);
     } catch {
@@ -87,7 +132,7 @@ export async function POST(request: NextRequest) {
 
   await prisma.goal.update({
     where: { id: goalId },
-    data: { status: 'COMPLETED' },
+    data: { status: isFailed ? 'REFUNDED' : 'COMPLETED' },
   });
 
   const pointsEarned = Math.min(50, Math.floor(goal.penaltyCents / 100) + 10);

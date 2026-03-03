@@ -24,6 +24,9 @@ export async function POST(
   if (goal.status !== 'FAILED') {
     return NextResponse.json({ message: '僅未完成目標可申請退款' }, { status: 400 });
   }
+  if (!goal.proof) {
+    return NextResponse.json({ message: '請先上傳證明後再申請退款' }, { status: 400 });
+  }
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
