@@ -1,24 +1,25 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
-import { VISIBLE_ITEMS, getAffinityRequiredForIndex } from '../src/lib/shop-items';
+import { EFFECTIVE_ITEMS } from '../src/lib/shop-items';
 
 const prisma = new PrismaClient();
 
 async function main() {
   const existingItems = await prisma.shopItem.count();
   if (existingItems === 0) {
-    for (let i = 0; i < 50; i++) {
-      const name = i < 5 ? VISIBLE_ITEMS[i] : '?';
+    for (const item of EFFECTIVE_ITEMS) {
       await prisma.shopItem.create({
         data: {
-          name,
-          pointsCost: 20 + Math.floor(i / 5) * 10,
-          affinityRequired: getAffinityRequiredForIndex(i),
-          sortOrder: i,
+          name: item.name,
+          itemType: item.itemType,
+          effectValue: item.effectValue,
+          pointsCost: item.pointsCost,
+          affinityRequired: item.affinityRequired,
+          sortOrder: item.sortOrder,
         },
       });
     }
-    console.log('Created 50 shop items');
+    console.log('Created shop items:', SHOP_ITEMS.length);
   }
 
   const passwordHash = await bcrypt.hash('demo123', 10);
@@ -31,7 +32,7 @@ async function main() {
       name: 'Demo User',
       subscription: 'FREE',
       balance: 0,
-      points: 50,
+      points: 100,
     },
   });
 

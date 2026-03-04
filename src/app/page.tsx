@@ -2,9 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getServerSession } from '@/lib/next-auth';
 import { authOptions } from '@/lib/auth-options';
+import { getLocale } from '@/lib/locale-server';
+import { t } from '@/lib/i18n';
 
 export default async function HomePage() {
-  const session = await getServerSession(authOptions);
+  const [session, locale] = await Promise.all([
+    getServerSession(authOptions),
+    getLocale(),
+  ]);
 
   return (
     <div className="space-y-8 text-center">
@@ -17,28 +22,28 @@ export default async function HomePage() {
         priority
       />
       <h1 className="text-2xl sm:text-3xl font-bold text-teal-800 px-2">
-        不夠痛 你就不會用
+        {t('home.headline', locale)}
       </h1>
       <p className="text-base sm:text-lg text-slate-600 px-2 break-words">
-        押金 + Refund + AI Coach — 用處罰機制逼自己完成目標，完成就能 100% 拿回。
+        {t('app.taglineShort', locale)}
       </p>
       <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
         {session?.user?.email ? (
           <>
             <Link href="/dashboard" className="btn-primary">
-              進入 Dashboard
+              {t('home.enterDashboard', locale)}
             </Link>
             <Link href="/goals" className="btn-secondary">
-              設定目標
+              {t('home.setGoals', locale)}
             </Link>
           </>
         ) : (
           <>
             <Link href="/login" className="btn-primary">
-              登入
+              {t('home.login', locale)}
             </Link>
             <Link href="/register" className="btn-secondary">
-              註冊
+              {t('home.register', locale)}
             </Link>
           </>
         )}

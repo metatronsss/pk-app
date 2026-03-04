@@ -4,6 +4,7 @@ import { getSessionUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import CoachChat from './CoachChat';
 import CoachSettings from './CoachSettings';
+import CoachEquip from './CoachEquip';
 import { COACH_TYPES, COACH_GENDERS, getGreeting, getCoachImageKey, getCoachReminders } from '@/lib/coach-dialogue';
 
 export default async function CoachPage() {
@@ -16,12 +17,16 @@ export default async function CoachPage() {
     );
   }
 
-  const [coach, activeGoals] = await Promise.all([
+  const [coach, activeGoals, userItems] = await Promise.all([
     prisma.coachProfile.findUnique({ where: { userId: user.id } }),
     prisma.goal.findMany({
       where: { userId: user.id, status: 'ACTIVE', proof: null },
       select: { id: true, title: true, dueAt: true },
       orderBy: { dueAt: 'asc' },
+    }),
+    prisma.userItem.findMany({
+      where: { userId: user.id },
+      include: { shopItem: { select: { name: true, sortOrder: true } } },
     }),
   ]);
 
@@ -40,13 +45,21 @@ export default async function CoachPage() {
     ? `${greeting}\n\n${reminders.join('\n\n')}`
     : greeting;
   const imageSrc = getCoachImageKey(coachType, coachGender);
+  const equippedIds: string[] = coach?.equippedShopItemIds
+    ? (JSON.parse(coach.equippedShopItemIds) as string[]).filter(Boolean)
+    : [];
+  const ownedItems = userItems.map((ui) => ({
+    id: ui.id,
+    shopItemId: ui.shopItemId,
+    shopItem: ui.shopItem!,
+  }));
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-slate-800">AI Coach</h1>
+      <h1 className="text-2xl font-bold text-slate-800">{t('coach.aiCoach', locale)}</h1>
       <div className="grid gap-6 md:grid-cols-3 min-w-0">
         <div className="card md:col-span-1 space-y-4">
-          <h2 className="font-semibold text-slate-700">教練設定</h2>
+          <h2 className="font-semibold text-slate-700">{t('coach.settings', locale)}</h2>
           <CoachSettings
             userId={user.id}
             coachType={coachType}
@@ -62,20 +75,21 @@ export default async function CoachPage() {
             />
           </div>
           <p className="text-sm text-slate-500">
-            好感度：{affinity}（-100 ~ 100）
+            {t('coach.affinity', locale)}：{affinity}{t('coach.affinityRange', locale)}
           </p>
           <p className="text-sm text-amber-600">
-            積分：{user.points}（每日登入 +10）
+            {t('coach.pointsDaily', locale, { points: String(user.points) })}
           </p>
+          <CoachEquip userId={user.id} equippedIds={equippedIds} ownedItems={ownedItems} locale={locale} />
           <Link href="/shop" className="block text-sm text-teal-600 hover:underline">
-            商城兌換道具 →
+            {t('coach.equipItems', locale)}
           </Link>
           <Link href="/dashboard" className="block text-sm text-teal-600 hover:underline">
-            回 Dashboard
+            {t('coach.backDashboard', locale)}
           </Link>
         </div>
         <div className="card md:col-span-2">
-          <h2 className="mb-4 font-semibold text-slate-700">與 Coach 對話</h2>
+          <h2 className="mb-4 font-semibold text-slate-700">{t('coach.chat', locale)}</h2>
           <CoachChat
             userId={user.id}
             coachType={coachType}

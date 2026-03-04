@@ -41,6 +41,7 @@ model Goal {
   refundable            Boolean    @default(true)
   stripePaymentIntentId String?
   stripeChargeId        String?
+  refundEligibleAt      DateTime?  // 非會員補完成後，可退款的日期（60 天後）
   createdAt             DateTime   @default(now())
   updatedAt             DateTime   @updatedAt
   proof                 Proof?
@@ -60,34 +61,40 @@ model Proof {
 }
 
 model CoachProfile {
-  id             String    @id @default(cuid())
-  userId         String    @unique
-  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  coachType      String    @default("friend")
-  coachGender    String    @default("male")
-  affinity       Int       @default(0)
-  lastGreetingAt DateTime?
-  unlockedItems  String    @default("[]")
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  id                        String    @id @default(cuid())
+  userId                    String    @unique
+  user                      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  coachType                 String    @default("friend")
+  coachGender               String    @default("male")
+  affinity                  Int       @default(0)
+  highestAffinityTierReached Int     @default(0)  // 曾達到的最高等級（0-9），用於商城可見
+  equippedShopItemIds      String    @default("[]") // JSON array，最多 5 個 shopItemId
+  lastGreetingAt            DateTime?
+  unlockedItems             String    @default("[]")
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
 }
 
 model ShopItem {
-  id              String    @id @default(cuid())
-  name            String
-  pointsCost      Int
-  affinityRequired Int      @default(0)
-  imageUrl        String?
-  sortOrder       Int       @default(0)
-  createdAt       DateTime  @default(now())
+  id               String    @id @default(cuid())
+  name             String
+  itemType         String    @default("cosmetic") // penalty_reduction | grace_period | affinity_boost | cosmetic
+  effectValue      Int       @default(0)         // 減輕處罰: 90=扣90%, 寬限期: 天數, 好感度: +N
+  pointsCost       Int
+  affinityRequired Int       @default(0)
+  imageUrl         String?
+  sortOrder        Int       @default(0)
+  createdAt        DateTime  @default(now())
+  userItems        UserItem[]
 }
 
 model UserItem {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   shopItemId String
-  createdAt  DateTime @default(now())
+  shopItem   ShopItem  @relation(fields: [shopItemId], references: [id], onDelete: Cascade)
+  createdAt  DateTime  @default(now())
 
   @@unique([userId, shopItemId])
 }

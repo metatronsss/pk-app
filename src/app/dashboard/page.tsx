@@ -27,9 +27,13 @@ export default async function DashboardPage() {
 
   const activeGoals = goals.filter((g) => g.status === 'ACTIVE');
   const failedRefundable = goals.filter((g) => g.status === 'FAILED' && g.refundable);
+  const refundPending = goals.filter((g) => g.status === 'REFUND_PENDING');
   const refundableCents =
     user.balance +
     failedRefundable
+      .filter((g) => g.stripeChargeId)
+      .reduce((sum, g) => sum + g.penaltyCents, 0) +
+    refundPending
       .filter((g) => g.stripeChargeId)
       .reduce((sum, g) => sum + g.penaltyCents, 0);
   const balanceUsd = (refundableCents / 100).toFixed(2);
@@ -37,37 +41,37 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       <h1 className="text-xl sm:text-2xl font-bold text-slate-800 break-words">
-        {user.name ? `${user.name}，歡迎回來` : 'Dashboard'}
+        {user.name ? `${user.name}，${t('dashboard.welcome', locale)}` : t('nav.dashboard', locale)}
       </h1>
 
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="card">
-          <p className="text-sm text-slate-500">已處罰金額（可退）</p>
+          <p className="text-sm text-slate-500">{t('dashboard.penalizedRefundable', locale)}</p>
           <p className="text-2xl font-bold text-teal-700">$ {balanceUsd} USD</p>
           <Link href="/goals?filter=failed" className="mt-2 text-sm text-teal-600 hover:underline">
-            完成目標拿回 →
+            {t('dashboard.getBackByComplete', locale)}
           </Link>
         </div>
         <div className="card">
-          <p className="text-sm text-slate-500">積分</p>
+          <p className="text-sm text-slate-500">{t('dashboard.points', locale)}</p>
           <p className="text-2xl font-bold text-amber-600">{user.points}</p>
           <Link href="/shop" className="mt-2 text-sm text-amber-600 hover:underline">
-            商城兌換道具 →
+            {t('dashboard.shopExchange', locale)}
           </Link>
         </div>
         <div className="card">
-          <p className="text-sm text-slate-500">進行中目標</p>
+          <p className="text-sm text-slate-500">{t('dashboard.activeGoals', locale)}</p>
           <p className="text-2xl font-bold text-slate-800">{activeGoals.length}</p>
           <Link href="/goals" className="mt-2 text-sm text-slate-600 hover:underline">
-            管理目標 →
+            {t('dashboard.manageGoals', locale)}
           </Link>
         </div>
       </div>
 
       <div className="card">
-        <h2 className="mb-4 font-semibold">本月目標</h2>
+        <h2 className="mb-4 font-semibold">{t('dashboard.thisMonthGoals', locale)}</h2>
         {goals.length === 0 ? (
-          <p className="text-slate-500">尚無目標，先設定一個吧。</p>
+          <p className="text-slate-500">{t('dashboard.noGoals', locale)}</p>
         ) : (
           <ul className="space-y-3">
             {goals.map((g) => (
@@ -80,7 +84,7 @@ export default async function DashboardPage() {
                     {g.title}
                   </Link>
                   <p className="text-sm text-slate-500">
-                    截止 {format(g.dueAt, 'MM/dd', { locale: zhTW })} · 處罰 $ {(g.penaltyCents / 100).toFixed(2)} USD
+                    {t('goals.deadline', locale)} {format(g.dueAt, 'MM/dd', { locale: dateLocale })} · {t('goals.penalty', locale)} $ {(g.penaltyCents / 100).toFixed(2)} USD
                   </p>
                 </div>
                 <span
@@ -91,12 +95,17 @@ export default async function DashboardPage() {
                         ? 'bg-teal-100 text-teal-800'
                         : g.status === 'FAILED'
                           ? 'bg-red-100 text-red-800'
-                          : 'bg-slate-100 text-slate-600'
+                          : g.status === 'REFUND_PENDING'
+                            ? 'bg-amber-100 text-amber-800'
+                            : g.status === 'REFUNDED'
+                              ? 'bg-teal-100 text-teal-800'
+                              : 'bg-slate-100 text-slate-600'
                   }`}
                 >
                   {g.status === 'ACTIVE' && '進行中'}
                   {g.status === 'COMPLETED' && '已完成'}
                   {g.status === 'FAILED' && '未完成'}
+                  {g.status === 'REFUND_PENDING' && '待退款'}
                   {g.status === 'REFUNDED' && '已退款'}
                 </span>
               </li>
@@ -105,7 +114,7 @@ export default async function DashboardPage() {
         )}
         <div className="mt-4">
           <Link href="/goals/new" className="btn-primary">
-            新增目標
+            {t('dashboard.addGoal', locale)}
           </Link>
         </div>
       </div>

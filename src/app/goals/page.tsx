@@ -31,7 +31,7 @@ export default async function GoalsPage() {
       </div>
 
       <p className="text-slate-600">
-        每月可設定 1～3 個目標，未完成即扣款；完成並上傳證明可 100% 拿回。
+        每月可設定 1～3 個目標，未完成即扣款；完成並上傳證明可 100% 拿回。會員 1 日內退款，非會員 60 天後退款。
       </p>
 
       {goals.length === 0 ? (
@@ -63,12 +63,17 @@ export default async function GoalsPage() {
                         ? 'bg-teal-100 text-teal-800'
                         : g.status === 'FAILED'
                           ? 'bg-red-100 text-red-800'
-                          : 'bg-slate-100 text-slate-600'
+                          : g.status === 'REFUND_PENDING'
+                            ? 'bg-amber-100 text-amber-800'
+                            : g.status === 'REFUNDED'
+                              ? 'bg-teal-100 text-teal-800'
+                              : 'bg-slate-100 text-slate-600'
                   }`}
                 >
                   {g.status === 'ACTIVE' && '進行中'}
                   {g.status === 'COMPLETED' && '已完成'}
                   {g.status === 'FAILED' && '未完成'}
+                  {g.status === 'REFUND_PENDING' && '待退款'}
                   {g.status === 'REFUNDED' && '已退款'}
                 </span>
               </div>

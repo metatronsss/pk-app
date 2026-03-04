@@ -1,15 +1,19 @@
 import { NextResponse } from 'next/server';
 import { getSessionUserId } from '@/lib/auth';
 import { penalizeOverdueGoals } from '@/lib/penalize';
+import { processEligibleRefunds } from '@/lib/process-refunds';
 
 /**
- * 登入後由 client 呼叫，背景執行 penalize，不阻塞頁面載入。
+ * 登入後由 client 呼叫，背景執行 penalize 與退款處理，不阻塞頁面載入。
  */
 export async function POST() {
   const userId = await getSessionUserId();
   if (!userId) {
     return NextResponse.json({ message: '請先登入' }, { status: 401 });
   }
-  const penalized = await penalizeOverdueGoals();
-  return NextResponse.json({ penalized });
+  const [penalized, refunded] = await Promise.all([
+    penalizeOverdueGoals(),
+    processEligibleRefunds(),
+  ]);
+  return NextResponse.json({ penalized, refunded });
 }

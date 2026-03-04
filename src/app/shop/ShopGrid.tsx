@@ -2,10 +2,14 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { t } from '@/lib/i18n';
+import type { Locale } from '@/lib/i18n';
 
 type ShopItem = {
   id: string;
   name: string;
+  itemType?: string;
+  effectValue?: number;
   pointsCost: number;
   affinityRequired: number;
   imageUrl: string | null;
@@ -16,12 +20,16 @@ export default function ShopGrid({
   items,
   userPoints,
   userAffinity,
+  highestTier,
   userItemIds,
+  locale,
 }: {
-  items: ShopItem[];
+  items: (ShopItem & { tier?: number })[];
   userPoints: number;
   userAffinity: number;
+  highestTier: number;
   userItemIds: string[];
+  locale: Locale;
 }) {
   const [purchasing, setPurchasing] = useState<string | null>(null);
   const ownedSet = new Set(userItemIds);
@@ -41,10 +49,10 @@ export default function ShopGrid({
       if (res.ok) {
         window.location.reload();
       } else {
-        alert(data.message ?? '兌換失敗');
+        alert(data.message ?? t('shop.exchangeFailed', locale));
       }
     } catch {
-      alert('兌換失敗');
+      alert(t('shop.exchangeFailed', locale));
     } finally {
       setPurchasing(null);
     }
@@ -53,15 +61,22 @@ export default function ShopGrid({
   return (
     <div className="grid grid-cols-5 gap-4 sm:grid-cols-5 md:grid-cols-10">
       {items.map((item) => {
-        const isLocked = userAffinity < item.affinityRequired;
+        const tier = item.tier ?? Math.floor((item.sortOrder ?? 0) / 5);
+        const isVisible = tier <= highestTier;
+        const isAffinityLocked = userAffinity < item.affinityRequired;
         const isOwned = ownedSet.has(item.id);
-        const canBuy = !isLocked && !isOwned && userPoints >= item.pointsCost;
+        const canBuy = isVisible && !isAffinityLocked && !isOwned && userPoints >= item.pointsCost;
+
+        if (!isVisible) return null;
+
+        const types = (item.itemType || '').split(',').filter(Boolean);
+        const showEffects = types.length > 0;
 
         return (
           <div
             key={item.id}
             className={`card flex flex-col items-center p-3 ${
-              isLocked ? 'opacity-60' : ''
+              isAffinityLocked && !isOwned ? 'opacity-70' : ''
             }`}
           >
             <div className="relative h-16 w-16 rounded-lg bg-slate-100 flex items-center justify-center overflow-hidden">
@@ -69,32 +84,42 @@ export default function ShopGrid({
                 <Image src={item.imageUrl} alt={item.name} width={64} height={64} />
               ) : (
                 <span className="text-2xl text-slate-400">
-                  {isLocked ? '?' : item.name === '?' ? '?' : item.name.charAt(0)}
+                  {item.name === '?' ? '?' : item.name.charAt(0)}
                 </span>
               )}
             </div>
             <p className="mt-2 text-center text-xs sm:text-sm font-medium text-slate-700 break-words">
-              {isLocked ? '? 鎖定中' : item.name}
+              {item.name}
             </p>
-            {!isLocked && (
-              <>
-                <p className="text-xs text-amber-600">{item.pointsCost} 積分</p>
-                {item.affinityRequired > 0 && (
-                  <p className="text-xs text-slate-500">好感度 {item.affinityRequired}</p>
+            {showEffects && (
+              <div className="text-xs text-slate-600 space-y-0.5">
+                {types.includes('penalty_reduction') && (
+                  <p>{t('shop.penaltyReduce', locale, { p: String(95 - tier * 2) })}</p>
                 )}
-              </>
+                {types.includes('grace_period') && (
+                  <p>{t('shop.gracePeriod', locale, { d: String(1 + tier) })}</p>
+                )}
+                {types.includes('affinity_boost') && (
+                  <p>{t('shop.affinityBoost', locale, { a: String(5 + tier * 5) })}</p>
+                )}
+              </div>
             )}
-            {!isLocked && !isOwned && (
+            <p className="text-xs text-amber-600">{t('shop.pointsCost', locale, { n: String(item.pointsCost) })}</p>
+            {item.affinityRequired > 0 && (
+              <p className="text-xs text-slate-500">{t('shop.affinityRequired', locale, { n: String(item.affinityRequired) })}</p>
+            )}
+            {!isOwned && (
               <button
                 onClick={() => handlePurchase(item)}
                 disabled={!canBuy || !!purchasing}
                 className="mt-2 btn-primary text-xs py-1 px-2 disabled:opacity-50"
+                title={!canBuy && isAffinityLocked ? t('shop.affinityLockedTitle', locale) : undefined}
               >
-                {purchasing === item.id ? '兌換中...' : '兌換'}
+                {purchasing === item.id ? t('shop.exchanging', locale) : canBuy ? t('shop.exchange', locale) : t('shop.affinityLocked', locale)}
               </button>
             )}
             {isOwned && (
-              <span className="mt-2 text-xs text-teal-600 font-medium">已擁有</span>
+              <span className="mt-2 text-xs text-teal-600 font-medium">{t('shop.owned', locale)}</span>
             )}
           </div>
         );

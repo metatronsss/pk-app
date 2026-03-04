@@ -62,6 +62,8 @@ export async function processDailyLogin(userId: string): Promise<{ pointsAdded: 
         },
       }),
     ]);
+    const { updateHighestTierIfNeeded } = await import('./shop-items');
+    await updateHighestTierIfNeeded(prisma, userId, newAffinity);
   } else {
     await userUpdate;
   }

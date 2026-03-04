@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
   const [user, item, coach] = await Promise.all([
     prisma.user.findUnique({ where: { id: userId }, select: { points: true } }),
     prisma.shopItem.findUnique({ where: { id: shopItemId } }),
-    prisma.coachProfile.findUnique({ where: { userId }, select: { affinity: true } }),
+    prisma.coachProfile.findUnique({ where: { userId }, select: { affinity: true, highestAffinityTierReached: true } }),
   ]);
 
   if (!user || !item) {
@@ -25,6 +25,11 @@ export async function POST(request: NextRequest) {
   }
 
   const affinity = coach?.affinity ?? 0;
+  const highestTier = coach?.highestAffinityTierReached ?? 0;
+  const itemTier = Math.floor((item.sortOrder ?? 0) / 5);
+  if (itemTier > highestTier) {
+    return NextResponse.json({ message: '尚未解鎖此等級道具' }, { status: 400 });
+  }
   if (affinity < item.affinityRequired) {
     return NextResponse.json({ message: '好感度不足' }, { status: 400 });
   }

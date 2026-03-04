@@ -55,12 +55,17 @@ export default async function GoalDetailPage({
                       ? 'bg-teal-100 text-teal-800'
                       : goal.status === 'FAILED'
                         ? 'bg-red-100 text-red-800'
-                        : 'bg-slate-100 text-slate-600'
+                        : goal.status === 'REFUND_PENDING'
+                          ? 'bg-amber-100 text-amber-800'
+                          : goal.status === 'REFUNDED'
+                            ? 'bg-teal-100 text-teal-800'
+                            : 'bg-slate-100 text-slate-600'
                 }`}
               >
                 {goal.status === 'ACTIVE' && '進行中'}
                 {goal.status === 'COMPLETED' && '已完成'}
                 {goal.status === 'FAILED' && '未完成'}
+                {goal.status === 'REFUND_PENDING' && '待退款（60 天後）'}
                 {goal.status === 'REFUNDED' && '已退款'}
               </span>
             </dd>

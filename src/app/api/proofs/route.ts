@@ -68,25 +68,18 @@ export async function POST(request: NextRequest) {
   }
 
   const isFailed = goal.status === 'FAILED';
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { subscription: true, balance: true },
+  });
+  if (!user) {
+    return NextResponse.json({ message: '用戶不存在' }, { status: 404 });
+  }
 
-  if (isFailed) {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { subscription: true, balance: true },
-    });
-    if (!user) {
-      return NextResponse.json({ message: '用戶不存在' }, { status: 404 });
-    }
-    const now = new Date();
-    const lastMonthStart = startOfMonth(subMonths(now, 1));
-    const lastMonthEnd = startOfMonth(now);
-    const isLastMonth = goal.dueAt >= lastMonthStart && goal.dueAt < lastMonthEnd;
-    if (user.subscription === 'FREE' && !isLastMonth) {
-      return NextResponse.json(
-        { message: '免費用戶僅能退上個月遞延目標的款' },
-        { status: 400 }
-      );
-    }
+  const isMember = user.subscription !== 'FREE';
+  const refundImmediately = isMember; // 會員 1 日內退，非會員 60 天後退
+
+  if (isFailed && refundImmediately) {
     if (isStripeEnabled && stripe && goal.stripeChargeId) {
       try {
         await stripe.refunds.create({
@@ -130,9 +123,16 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  const newStatus = isFailed
+    ? refundImmediately
+      ? 'REFUNDED'
+      : 'REFUND_PENDING'
+    : 'COMPLETED';
+  const refundEligibleAt = isFailed && !refundImmediately ? addDays(new Date(), 60) : null;
+
   await prisma.goal.update({
     where: { id: goalId },
-    data: { status: isFailed ? 'REFUNDED' : 'COMPLETED' },
+    data: { status: newStatus, refundEligibleAt },
   });
 
   const pointsEarned = Math.min(50, Math.floor(goal.penaltyCents / 100) + 10);
@@ -141,7 +141,9 @@ export async function POST(request: NextRequest) {
     data: { points: { increment: pointsEarned } },
   });
 
-  const affinityGain = affinityGainFromGoalCompletion(goal.penaltyCents);
+  const { getUserItemEffects } = await import('@/lib/shop-items');
+  const effects = await getUserItemEffects(userId, prisma);
+  const affinityGain = affinityGainFromGoalCompletion(goal.penaltyCents) + effects.affinityBoost;
   const coach = await prisma.coachProfile.findUnique({
     where: { userId },
   });
@@ -157,6 +159,8 @@ export async function POST(request: NextRequest) {
       unlockedItems: '[]',
     },
   });
+  const { updateHighestTierIfNeeded } = await import('@/lib/shop-items');
+  await updateHighestTierIfNeeded(prisma, userId, newAffinity);
 
   return NextResponse.json(proof);
 }
