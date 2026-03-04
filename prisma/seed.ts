@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
-import { EFFECTIVE_ITEMS } from '../src/lib/shop-items';
+import { SHOP_ITEMS } from '../src/lib/shop-items';
 
 const prisma = new PrismaClient();
 
