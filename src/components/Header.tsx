@@ -26,7 +26,7 @@ export default async function Header() {
 
   return (
     <header className="relative border-b border-slate-200 bg-white">
-      <div className="mx-auto flex h-14 max-w-4xl items-center justify-between gap-2 px-4 min-w-0 overflow-hidden">
+      <div className="mx-auto flex h-14 min-h-[3.5rem] max-w-4xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 min-w-0 overflow-hidden py-2 md:py-0">
         <Link href="/" className="flex items-center gap-2 font-bold text-teal-700 shrink-0">
           <Image src="/pk_logo.png" alt="PK" width={36} height={36} className="rounded-lg" />
           <span>PK yourself</span>

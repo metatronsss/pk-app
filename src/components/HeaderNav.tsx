@@ -50,15 +50,15 @@ export default function HeaderNav({ session, user, hasCoachReminder }: Props) {
       </button>
 
       {/* Desktop nav */}
-      <nav className="hidden md:flex items-center gap-2 sm:gap-4 flex-wrap min-w-0">
+      <nav className="hidden md:flex items-center gap-2 sm:gap-3 flex-wrap min-w-0">
         {isLoggedIn ? (
           <>
-            <Link href="/dashboard" className="text-slate-600 hover:text-teal-700 whitespace-nowrap">{t('nav.dashboard', locale)}</Link>
-            <Link href="/goals" className="text-slate-600 hover:text-teal-700 whitespace-nowrap">{t('nav.goals', locale)}</Link>
+            <Link href="/dashboard" className="shrink-0 text-slate-600 hover:text-teal-700 text-sm whitespace-nowrap">{t('nav.dashboard', locale)}</Link>
+            <Link href="/goals" className="shrink-0 text-slate-600 hover:text-teal-700 text-sm whitespace-nowrap">{t('nav.goals', locale)}</Link>
             <CoachLink hasReminder={hasCoachReminder} />
-            <Link href="/shop" className="text-slate-600 hover:text-teal-700 whitespace-nowrap">{t('nav.shop', locale)}</Link>
-            <Link href="/payment" className="text-slate-600 hover:text-teal-700 whitespace-nowrap">{t('nav.payment', locale)}</Link>
-            <Link href="/subscription" className="text-slate-600 hover:text-teal-700 whitespace-nowrap">{t('nav.subscription', locale)}</Link>
+            <Link href="/shop" className="shrink-0 text-slate-600 hover:text-teal-700 text-sm whitespace-nowrap">{t('nav.shop', locale)}</Link>
+            <Link href="/payment" className="shrink-0 text-slate-600 hover:text-teal-700 text-sm whitespace-nowrap">{t('nav.payment', locale)}</Link>
+            <Link href="/subscription" className="shrink-0 text-slate-600 hover:text-teal-700 text-sm whitespace-nowrap">{t('nav.subscription', locale)}</Link>
             {user && <HeaderClient user={user} />}
           </>
         ) : (

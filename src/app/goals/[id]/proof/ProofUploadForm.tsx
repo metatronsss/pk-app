@@ -6,12 +6,14 @@ import { t, mapApiErrorToMessage } from '@/lib/i18n';
 import type { Locale } from '@/lib/i18n';
 
 const MAX_FILE_SIZE = 1024 * 1024; // 1MB for non-image
-const MAX_IMAGE_DIM = 1200;
-const IMAGE_QUALITY = 0.85;
+const MAX_IMAGE_BEFORE_WARN = 4 * 1024 * 1024; // 4MB - warn if original exceeds
+const MAX_IMAGE_DIM = 800;
+const IMAGE_QUALITY = 0.72;
+const TARGET_MAX_KB = 400; // target max ~400KB after compression
 
 /** 壓縮圖片以降低上傳大小，避免 body 限制 */
 async function compressImage(file: File): Promise<File> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const img = new Image();
     const url = URL.createObjectURL(file);
     img.onload = () => {
@@ -35,18 +37,27 @@ async function compressImage(file: File): Promise<File> {
         return;
       }
       ctx.drawImage(img, 0, 0, width, height);
-      canvas.toBlob(
-        (blob) => {
-          if (!blob) {
-            resolve(file);
-            return;
-          }
-          const name = file.name.replace(/\.[^.]+$/, '.jpg');
-          resolve(new File([blob], name, { type: 'image/jpeg' }));
-        },
-        'image/jpeg',
-        IMAGE_QUALITY
-      );
+      let quality = IMAGE_QUALITY;
+      const tryBlob = () => {
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              resolve(file);
+              return;
+            }
+            if (blob.size > TARGET_MAX_KB * 1024 && quality > 0.3) {
+              quality -= 0.15;
+              tryBlob();
+              return;
+            }
+            const name = file.name.replace(/\.[^.]+$/, '.jpg');
+            resolve(new File([blob], name, { type: 'image/jpeg' }));
+          },
+          'image/jpeg',
+          quality
+        );
+      };
+      tryBlob();
     };
     img.onerror = () => {
       URL.revokeObjectURL(url);
@@ -64,10 +75,16 @@ export default function ProofUploadForm({ goalId, locale }: { goalId: string; lo
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const errorRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (error) errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, [error]);
+
+  useEffect(() => {
+    setFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }, [type]);
 
   const submitWithUrl = async () => {
     setError(null);
@@ -99,6 +116,10 @@ export default function ProofUploadForm({ goalId, locale }: { goalId: string; lo
     }
     if (type !== 'image' && file.size > MAX_FILE_SIZE) {
       setError(t('goals.uploadTooLarge', locale));
+      return;
+    }
+    if (type === 'image' && file.type.startsWith('image/') && file.size > MAX_IMAGE_BEFORE_WARN) {
+      setError(t('goals.uploadImageTooLarge', locale));
       return;
     }
     setError(null);
@@ -180,12 +201,37 @@ export default function ProofUploadForm({ goalId, locale }: { goalId: string; lo
       ) : (
         <div>
           <label className="block text-sm font-medium text-slate-700">{t('goals.selectFile', locale)}</label>
-          <input
-            type="file"
-            accept={type === 'image' ? 'image/*' : type === 'video' ? 'video/*' : '*'}
-            onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
-          />
+          <div className="mt-1 flex flex-wrap items-center gap-2">
+            <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
+              <svg className="h-4 w-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              </svg>
+              {t('goals.selectFile', locale)}
+              <input
+                type="file"
+                accept={type === 'image' ? 'image/*' : type === 'video' ? 'video/*' : '*'}
+                onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                className="sr-only"
+                ref={fileInputRef}
+              />
+            </label>
+            {file && (
+              <span className="inline-flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-700">
+                <span className="truncate max-w-[180px]" title={file.name}>{file.name}</span>
+                <button
+                  type="button"
+                  onClick={() => { setFile(null); const inp = fileInputRef.current; if (inp) inp.value = ''; }}
+                  title={t('goals.clearFile', locale)}
+                  className="rounded p-0.5 text-slate-500 hover:bg-slate-200 hover:text-slate-700"
+                  aria-label={t('goals.clearFile', locale)}
+                >
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </span>
+            )}
+          </div>
           <p className="mt-1 text-xs text-slate-500">{t('goals.fileSizeHint', locale)}</p>
         </div>
       )}

@@ -22,7 +22,7 @@ export default function LanguageSwitch({ currentLocale }: { currentLocale: Local
     <select
       value={currentLocale}
       onChange={handleChange}
-      className="text-sm border border-slate-200 rounded px-2 py-1 bg-white text-slate-700"
+      className="shrink-0 text-sm border border-slate-200 rounded px-2 py-1 bg-white text-slate-700"
       aria-label="選擇語言"
     >
       {LOCALES.map((l) => (
