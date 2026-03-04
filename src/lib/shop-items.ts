@@ -90,13 +90,8 @@ export function buildShopItems(): Array<{
 export const SHOP_ITEMS = buildShopItems();
 
 /** 從裝備的 5 個道具計算效果（取最佳） */
-export async function getUserItemEffects(
-  userId: string,
-  prisma: {
-    coachProfile: { findUnique: (args: unknown) => Promise<{ equippedShopItemIds: string } | null> };
-    userItem: { findMany: (args: unknown) => Promise<Array<{ shopItemId: string; shopItem: { itemType: string; effectValue: number; sortOrder: number } }>> };
-  }
-) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function getUserItemEffects(userId: string, prisma: any) {
   const effects = {
     penaltyReduction: 100,
     gracePeriodDays: 0,
@@ -147,11 +142,8 @@ export function getTierFromAffinity(affinity: number): number {
 }
 
 /** 當 affinity 上升時，更新 highestAffinityTierReached（若新等級更高） */
-export async function updateHighestTierIfNeeded(
-  prisma: { coachProfile: { findUnique: (args: unknown) => Promise<{ highestAffinityTierReached: number } | null>; update: (args: unknown) => Promise<unknown> } },
-  userId: string,
-  newAffinity: number
-) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function updateHighestTierIfNeeded(prisma: any, userId: string, newAffinity: number) {
   const coach = await prisma.coachProfile.findUnique({
     where: { userId },
     select: { highestAffinityTierReached: true },
