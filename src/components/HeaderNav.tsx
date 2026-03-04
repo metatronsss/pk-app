@@ -50,7 +50,7 @@ export default function HeaderNav({ session, user, hasCoachReminder }: Props) {
       </button>
 
       {/* Desktop nav */}
-      <nav className="hidden md:flex items-center gap-4 flex-wrap">
+      <nav className="hidden md:flex items-center gap-2 sm:gap-4 flex-wrap min-w-0">
         {isLoggedIn ? (
           <>
             <Link href="/dashboard" className="text-slate-600 hover:text-teal-700 whitespace-nowrap">{t('nav.dashboard', locale)}</Link>

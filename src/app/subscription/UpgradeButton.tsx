@@ -1,8 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { useLocale } from '@/components/LocaleProvider';
+import { t } from '@/lib/i18n';
 
 export default function UpgradeButton() {
+  const locale = useLocale();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -15,7 +18,7 @@ export default function UpgradeButton() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError(data.message ?? '無法建立結帳連結');
+        setError(data.message ?? t('subscription.errorCheckout', locale));
         setLoading(false);
         return;
       }
@@ -23,9 +26,9 @@ export default function UpgradeButton() {
         window.location.href = data.url;
         return;
       }
-      setError('未取得結帳連結');
+      setError(t('subscription.errorNoUrl', locale));
     } catch {
-      setError('連線失敗');
+      setError(t('subscription.errorNetwork', locale));
     } finally {
       setLoading(false);
     }
@@ -41,7 +44,7 @@ export default function UpgradeButton() {
         disabled={loading}
         className="btn-primary w-full"
       >
-        {loading ? '處理中…' : '升級訂閱 $10/月'}
+        {loading ? t('subscription.processing', locale) : t('subscription.upgradeBtn', locale)}
       </button>
     </div>
   );

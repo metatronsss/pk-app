@@ -14,8 +14,8 @@ export default function HeaderClient({ user }: Props) {
   const displayName = user.name ? `${hi}, ${user.name}` : (user.email ?? '');
 
   return (
-    <div className="flex items-center gap-3 min-w-0">
-      <span className="text-sm font-medium text-slate-700 truncate max-w-[120px] sm:max-w-none">
+    <div className="flex items-center gap-2 sm:gap-3 min-w-0 shrink-0">
+      <span className="text-sm font-medium text-slate-700 truncate max-w-[80px] sm:max-w-[120px] md:max-w-none">
         {displayName}
         <span
           className={`ml-2 rounded-full px-2 py-0.5 text-xs font-medium ${

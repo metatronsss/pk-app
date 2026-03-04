@@ -211,6 +211,15 @@ export const messages: Messages = {
   'user.logout': { zh: '登出', en: 'Logout', ja: 'ログアウト' },
   'user.hi': { zh: 'Hi', en: 'Hi', ja: 'こんにちは' },
 
+  // Subscription upgrade
+  'subscription.upgradeBtn': { zh: '升級訂閱 $10/月', en: 'Upgrade $10/mo', ja: 'アップグレード $10/月' },
+  'subscription.processing': { zh: '處理中…', en: 'Processing…', ja: '処理中…' },
+  'subscription.errorCheckout': { zh: '無法建立結帳連結', en: 'Cannot create checkout link', ja: 'チェックアウトリンクを作成できません' },
+  'subscription.errorNoUrl': { zh: '未取得結帳連結', en: 'No checkout URL', ja: 'URLを取得できませんでした' },
+  'subscription.errorNetwork': { zh: '連線失敗', en: 'Connection failed', ja: '接続に失敗しました' },
+  'subscription.loadError': { zh: '載入發生錯誤', en: 'Loading error', ja: '読み込みエラー' },
+  'common.retry': { zh: '重試', en: 'Retry', ja: '再試行' },
+
   // Home
   'home.headline': { zh: '不夠痛 你就不會用', en: 'Not painful enough, you won\'t use it', ja: '痛くないと使わない' },
   'home.enterDashboard': { zh: '進入 Dashboard', en: 'Enter Dashboard', ja: 'Dashboardへ' },

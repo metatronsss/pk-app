@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUserId } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { getKeywordReply, getDefaultReply } from '@/lib/coach-responses';
+import { getReply } from '@/lib/coach-responses';
+import type { CoachLocale } from '@/lib/coach-dialogue';
 
-const KEYWORDS = ['完成', '證明', '退款', '拖延', '目標', '教練'];
+const EMPTY_REPLY: Record<CoachLocale, string> = {
+  zh: '說點什麼吧～',
+  en: 'Say something~',
+  ja: '何か言ってね～',
+};
 
 export async function POST(request: NextRequest) {
   const userId = await getSessionUserId();
@@ -12,8 +17,9 @@ export async function POST(request: NextRequest) {
   }
   const body = await request.json().catch(() => ({}));
   const message = (body.message ?? '').trim();
+  const locale = (['zh', 'en', 'ja'].includes(body.locale) ? body.locale : 'zh') as CoachLocale;
   if (!message) {
-    return NextResponse.json({ reply: '說點什麼吧～' });
+    return NextResponse.json({ reply: EMPTY_REPLY[locale] });
   }
 
   const coach = await prisma.coachProfile.findUnique({
@@ -22,16 +28,7 @@ export async function POST(request: NextRequest) {
   const coachType = (coach?.coachType ?? 'friend') as 'family' | 'friend' | 'lover';
   const coachGender = (coach?.coachGender ?? 'male') as 'male' | 'female';
 
-  let reply = '';
-  for (const keyword of KEYWORDS) {
-    if (message.includes(keyword)) {
-      reply = getKeywordReply(keyword, coachType, coachGender) ?? '';
-      if (reply) break;
-    }
-  }
-  if (!reply) {
-    reply = getDefaultReply(coachType, coachGender);
-  }
+  const reply = getReply(message, coachType, coachGender, locale);
 
   await prisma.coachProfile.upsert({
     where: { userId },

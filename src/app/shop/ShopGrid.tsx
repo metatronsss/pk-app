@@ -82,7 +82,7 @@ export default function ShopGrid({
           >
             <div className="relative h-16 w-16 rounded-lg bg-slate-100 flex items-center justify-center overflow-hidden">
               {item.imageUrl ? (
-                <Image src={item.imageUrl} alt={item.name} width={64} height={64} />
+                <Image src={item.imageUrl} alt={getItemDisplayName(item.name, locale)} width={64} height={64} />
               ) : (
                 <span className="text-2xl text-slate-400">
                   {item.name === '?' ? '?' : item.name.charAt(0)}

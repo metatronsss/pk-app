@@ -41,8 +41,8 @@ export default async function CoachPage() {
         : [])
     : [];
 
-  const greeting = getGreeting(coachType, coachGender, affinity);
-  const reminders = getCoachReminders(activeGoals, coachType, coachGender);
+  const greeting = getGreeting(coachType, coachGender, affinity, locale);
+  const reminders = getCoachReminders(activeGoals, coachType, coachGender, locale);
   const initialGreeting = reminders.length > 0
     ? `${greeting}\n\n${reminders.join('\n\n')}`
     : greeting;

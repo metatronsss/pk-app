@@ -25,21 +25,21 @@ export default async function GoalsPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <h1 className="text-xl sm:text-2xl font-bold text-slate-800">我的目標</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-800">{t('goals.myGoals', locale)}</h1>
         <Link href="/goals/new" className="btn-primary">
-          新增目標
+          {t('goals.addGoal', locale)}
         </Link>
       </div>
 
       <p className="text-slate-600">
-        每月可設定 1～3 個目標，未完成即扣款；完成並上傳證明可 100% 拿回。會員 1 日內退款，非會員 60 天後退款。
+        {t('goals.desc', locale)}
       </p>
 
       {goals.length === 0 ? (
         <div className="card text-center text-slate-500">
-          <p>尚無目標。</p>
+          <p>{t('goals.noGoals', locale)}</p>
           <Link href="/goals/new" className="btn-primary mt-4">
-            設定第一個目標
+            {t('goals.setFirst', locale)}
           </Link>
         </div>
       ) : (
@@ -71,11 +71,11 @@ export default async function GoalsPage() {
                               : 'bg-slate-100 text-slate-600'
                   }`}
                 >
-                  {g.status === 'ACTIVE' && '進行中'}
-                  {g.status === 'COMPLETED' && '已完成'}
-                  {g.status === 'FAILED' && '未完成'}
-                  {g.status === 'REFUND_PENDING' && '待退款'}
-                  {g.status === 'REFUNDED' && '已退款'}
+                  {g.status === 'ACTIVE' && t('dashboard.statusActive', locale)}
+                  {g.status === 'COMPLETED' && t('dashboard.statusCompleted', locale)}
+                  {g.status === 'FAILED' && t('dashboard.statusFailed', locale)}
+                  {g.status === 'REFUND_PENDING' && t('dashboard.statusRefundPending', locale)}
+                  {g.status === 'REFUNDED' && t('dashboard.statusRefunded', locale)}
                 </span>
               </div>
               <div className="mt-3 flex flex-wrap gap-2">

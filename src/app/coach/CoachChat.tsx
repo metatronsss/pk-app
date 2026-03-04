@@ -48,13 +48,13 @@ export default function CoachChat({
       const res = await fetch('/api/coach/talk', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text }),
+        body: JSON.stringify({ message: text, locale }),
       });
       const data = await res.json().catch(() => ({}));
-      const reply = data.reply ?? '加油，你可以的！';
+      const reply = data.reply ?? t('coach.chatFallback', locale);
       setMessages((m) => [...m, { role: 'assistant', content: reply }]);
     } catch {
-      setMessages((m) => [...m, { role: 'assistant', content: '加油，你可以的！' }]);
+      setMessages((m) => [...m, { role: 'assistant', content: t('coach.chatFallback', locale) }]);
     } finally {
       setLoading(false);
     }
