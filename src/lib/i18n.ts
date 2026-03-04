@@ -123,6 +123,8 @@ export const messages: Messages = {
   'goals.submitProof': { zh: '送出證明', en: 'Submit proof', ja: '証明を送信' },
   'goals.uploadTooLarge': { zh: '檔案過大，請壓縮後再上傳或改用「連結」上傳。', en: 'File too large. Please compress or use link upload.', ja: 'ファイルが大きすぎます。圧縮するかリンクでアップロードしてください。' },
   'goals.uploadImageTooLarge': { zh: '圖片超過 4MB，請壓縮或改用較小的圖片、連結上傳。', en: 'Image over 4MB. Please compress, use smaller image, or link upload.', ja: '画像が4MB超です。圧縮するか小さな画像・リンクでアップロードしてください。' },
+  'goals.uploadNetworkError': { zh: '連線失敗，請檢查網路後重試。', en: 'Connection failed. Please check your network and try again.', ja: '接続に失敗しました。ネットワークを確認して再試行してください。' },
+  'goals.uploadCompressFailed': { zh: '圖片壓縮失敗，請改用「連結」上傳或換一張圖。', en: 'Image compression failed. Please use link upload or try a different image.', ja: '画像の圧縮に失敗しました。リンクでアップロードするか別の画像をお試しください。' },
   'goals.fileSizeHint': { zh: '圖片會自動壓縮；影片/檔案建議 1MB 以下', en: 'Images auto-compress; video/file under 1MB recommended', ja: '画像は自動圧縮。動画・ファイルは1MB以下を推奨' },
   'goals.pleaseSelectFile': { zh: '請選擇檔案', en: 'Please select a file', ja: 'ファイルを選択してください' },
   'goals.pleaseEnterLink': { zh: '請填寫連結', en: 'Please enter the link', ja: 'リンクを入力してください' },

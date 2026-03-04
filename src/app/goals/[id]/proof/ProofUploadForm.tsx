@@ -13,55 +13,59 @@ const TARGET_MAX_KB = 400; // target max ~400KB after compression
 
 /** 壓縮圖片以降低上傳大小，避免 body 限制 */
 async function compressImage(file: File): Promise<File> {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const img = new Image();
     const url = URL.createObjectURL(file);
     img.onload = () => {
       URL.revokeObjectURL(url);
-      const canvas = document.createElement('canvas');
-      let { width, height } = img;
-      if (width > MAX_IMAGE_DIM || height > MAX_IMAGE_DIM) {
-        if (width > height) {
-          height = Math.round((height / width) * MAX_IMAGE_DIM);
-          width = MAX_IMAGE_DIM;
-        } else {
-          width = Math.round((width / height) * MAX_IMAGE_DIM);
-          height = MAX_IMAGE_DIM;
+      try {
+        const canvas = document.createElement('canvas');
+        let { width, height } = img;
+        if (width > MAX_IMAGE_DIM || height > MAX_IMAGE_DIM) {
+          if (width > height) {
+            height = Math.round((height / width) * MAX_IMAGE_DIM);
+            width = MAX_IMAGE_DIM;
+          } else {
+            width = Math.round((width / height) * MAX_IMAGE_DIM);
+            height = MAX_IMAGE_DIM;
+          }
         }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          resolve(file);
+          return;
+        }
+        ctx.drawImage(img, 0, 0, width, height);
+        let quality = IMAGE_QUALITY;
+        const tryBlob = () => {
+          canvas.toBlob(
+            (blob) => {
+              if (!blob) {
+                resolve(file);
+                return;
+              }
+              if (blob.size > TARGET_MAX_KB * 1024 && quality > 0.3) {
+                quality -= 0.15;
+                tryBlob();
+                return;
+              }
+              const name = file.name.replace(/\.[^.]+$/, '.jpg');
+              resolve(new File([blob], name, { type: 'image/jpeg' }));
+            },
+            'image/jpeg',
+            quality
+          );
+        };
+        tryBlob();
+      } catch (err) {
+        reject(err);
       }
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        resolve(file);
-        return;
-      }
-      ctx.drawImage(img, 0, 0, width, height);
-      let quality = IMAGE_QUALITY;
-      const tryBlob = () => {
-        canvas.toBlob(
-          (blob) => {
-            if (!blob) {
-              resolve(file);
-              return;
-            }
-            if (blob.size > TARGET_MAX_KB * 1024 && quality > 0.3) {
-              quality -= 0.15;
-              tryBlob();
-              return;
-            }
-            const name = file.name.replace(/\.[^.]+$/, '.jpg');
-            resolve(new File([blob], name, { type: 'image/jpeg' }));
-          },
-          'image/jpeg',
-          quality
-        );
-      };
-      tryBlob();
     };
     img.onerror = () => {
       URL.revokeObjectURL(url);
-      resolve(file);
+      reject(new Error('Image load failed'));
     };
     img.src = url;
   });
@@ -78,13 +82,19 @@ export default function ProofUploadForm({ goalId, locale }: { goalId: string; lo
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (error) errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (error) errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, [error]);
 
   useEffect(() => {
     setFile(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
   }, [type]);
+
+  const handleUploadError = (e: unknown) => {
+    const msg = e instanceof Error ? e.message : (typeof e === 'string' ? e : '');
+    const isNetwork = !msg || /fetch|network|connection/i.test(msg);
+    setError(isNetwork ? t('goals.uploadNetworkError', locale) : msg || t('goals.uploadFailed', locale));
+  };
 
   const submitWithUrl = async () => {
     setError(null);
@@ -103,7 +113,7 @@ export default function ProofUploadForm({ goalId, locale }: { goalId: string; lo
       router.push(`/goals/${goalId}`);
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : t('goals.uploadFailed', locale));
+      handleUploadError(e);
     } finally {
       setLoading(false);
     }
@@ -127,7 +137,13 @@ export default function ProofUploadForm({ goalId, locale }: { goalId: string; lo
     try {
       let toUpload = file;
       if (type === 'image' && file.type.startsWith('image/')) {
-        toUpload = await compressImage(file);
+        try {
+          toUpload = await compressImage(file);
+        } catch (compressErr) {
+          setError(t('goals.uploadCompressFailed', locale));
+          setLoading(false);
+          return;
+        }
       }
       const form = new FormData();
       form.append('goalId', goalId);
@@ -138,17 +154,26 @@ export default function ProofUploadForm({ goalId, locale }: { goalId: string; lo
         body: form,
       });
       if (!res.ok) {
-        const j = await res.json().catch(() => ({}));
-        const msg =
-          res.status === 413
-            ? t('goals.uploadTooLarge', locale)
-            : mapApiErrorToMessage((j.message as string) || res.statusText, locale);
+        let msg = '';
+        try {
+          const j = await res.json().catch(() => ({}));
+          msg = (j?.message as string) || res.statusText || '';
+        } catch {
+          msg = res.statusText || `Error ${res.status}`;
+        }
+        if (res.status === 413) {
+          msg = t('goals.uploadTooLarge', locale);
+        } else if (msg) {
+          msg = mapApiErrorToMessage(msg, locale);
+        } else {
+          msg = t('goals.uploadFailed', locale);
+        }
         throw new Error(msg);
       }
       router.push(`/goals/${goalId}`);
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : t('goals.uploadFailed', locale));
+      handleUploadError(e);
     } finally {
       setLoading(false);
     }
@@ -169,11 +194,11 @@ export default function ProofUploadForm({ goalId, locale }: { goalId: string; lo
 
   return (
     <form onSubmit={handleSubmit} className="card space-y-4">
-      {error && (
-        <div ref={errorRef} role="alert" className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700">
+      {error ? (
+        <div ref={errorRef} role="alert" className="rounded-lg border-2 border-red-400 bg-red-50 p-4 text-sm font-semibold text-red-800">
           {error}
         </div>
-      )}
+      ) : null}
       <div>
         <label className="block text-sm font-medium text-slate-700">{t('goals.proofTypeLabel', locale)}</label>
         <select
