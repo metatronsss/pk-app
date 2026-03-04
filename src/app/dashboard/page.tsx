@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { unstable_noStore } from 'next/cache';
 import { getSessionUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { getLocale } from '@/lib/locale-server';
+import { t } from '@/lib/i18n';
 import { format } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
 
@@ -9,12 +11,12 @@ export const dynamic = 'force-dynamic';
 
 export default async function DashboardPage() {
   unstable_noStore();
-  const user = await getSessionUser();
+  const [user, locale] = await Promise.all([getSessionUser(), getLocale()]);
 
   if (!user) {
     return (
       <div className="card">
-        <p>請先登入。</p>
+        <p>{t('auth.pleaseLogin', locale)}</p>
       </div>
     );
   }
@@ -84,7 +86,7 @@ export default async function DashboardPage() {
                     {g.title}
                   </Link>
                   <p className="text-sm text-slate-500">
-                    {t('goals.deadline', locale)} {format(g.dueAt, 'MM/dd', { locale: dateLocale })} · {t('goals.penalty', locale)} $ {(g.penaltyCents / 100).toFixed(2)} USD
+                    {t('goals.deadline', locale)} {format(g.dueAt, 'MM/dd', { locale: zhTW })} · {t('goals.penalty', locale)} $ {(g.penaltyCents / 100).toFixed(2)} USD
                   </p>
                 </div>
                 <span

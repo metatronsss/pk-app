@@ -2,17 +2,19 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getSessionUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { getLocale } from '@/lib/locale-server';
+import { t } from '@/lib/i18n';
 import CoachChat from './CoachChat';
 import CoachSettings from './CoachSettings';
 import CoachEquip from './CoachEquip';
 import { COACH_TYPES, COACH_GENDERS, getGreeting, getCoachImageKey, getCoachReminders } from '@/lib/coach-dialogue';
 
 export default async function CoachPage() {
-  const user = await getSessionUser();
+  const [user, locale] = await Promise.all([getSessionUser(), getLocale()]);
   if (!user) {
     return (
       <div className="card">
-        <p>請先登入。</p>
+        <p>{t('auth.pleaseLogin', locale)}</p>
       </div>
     );
   }

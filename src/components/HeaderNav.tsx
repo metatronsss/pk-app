@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { useLocale } from '@/components/LocaleProvider';
+import { t } from '@/lib/i18n';
 import HeaderClient from './HeaderClient';
 
 type Props = {
