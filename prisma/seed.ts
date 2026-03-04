@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 async function main() {
   const existingItems = await prisma.shopItem.count();
   if (existingItems === 0) {
-    for (const item of EFFECTIVE_ITEMS) {
+    for (const item of SHOP_ITEMS) {
       await prisma.shopItem.create({
         data: {
           name: item.name,

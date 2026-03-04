@@ -70,7 +70,7 @@ NEXTAUTH_SECRET=任意至少32字元的隨機字串
 
 ## 專案結構
 
-- `docs/`：PRD、技術架構（上一層 `../docs`）
+- `docs/`（上一層 `../docs`）：PRD、技術架構、**規則與定義**（`RULES_AND_DEFINITIONS.md`）
 - `src/app/`：首頁、Dashboard、目標 CRUD、證明上傳、Coach
 - `src/app/api/`：goals、proofs、refund、coach/talk、cron/penalize
 - `prisma/`：Schema、seed
