@@ -34,7 +34,9 @@ export async function POST(request: NextRequest) {
     const buf = Buffer.from(bytes);
     const dir = path.join(process.cwd(), 'public', 'uploads');
     await mkdir(dir, { recursive: true });
-    const filename = `${goalId}-${Date.now()}-${file.name}`;
+    const originalName = (file as File & { name?: string }).name ?? 'upload';
+    const ext = type === 'image' ? '.jpg' : path.extname(originalName) || '';
+    const filename = `${goalId}-${Date.now()}${ext}`;
     const filepath = path.join(dir, filename);
     await writeFile(filepath, buf);
     url = `/uploads/${filename}`;

@@ -49,6 +49,7 @@ export const messages: Messages = {
   'auth.registerFailed': { zh: '註冊失敗', en: 'Registration failed', ja: '登録に失敗しました' },
   'auth.emailRegistered': { zh: '此 Email 已註冊', en: 'This email is already registered', ja: 'このメールは既に登録済みです' },
   'auth.registerSuccess': { zh: '註冊成功', en: 'Registration successful', ja: '登録完了' },
+  'auth.userNotFound': { zh: '用戶不存在', en: 'User not found', ja: 'ユーザーが見つかりません' },
 
   // Dashboard
   'dashboard.welcome': { zh: '歡迎回來', en: 'Welcome back', ja: 'おかえりなさい' },
@@ -85,7 +86,7 @@ export const messages: Messages = {
   'goals.description': { zh: '具體描述', en: 'Description', ja: '説明' },
   'goals.dueDate': { zh: '截止時間', en: 'Due Date', ja: '期限' },
   'goals.penalty': { zh: '處罰金額', en: 'Penalty', ja: '罰金' },
-  'goals.createWarning': { zh: '目標儲存後，截止日期與處罰金額無法調整，請確認後再送出。', en: 'After saving, due date and penalty cannot be changed.', ja: '保存後、期限・罰金は変更不可。' },
+  'goals.createWarning': { zh: '目標儲存後，截止日期與處罰金額無法調整，請確認後再送出。', en: 'After saving, due date and penalty cannot be changed. Please confirm before submitting.', ja: '保存後、期限・罰金は変更不可。確認してから送信してください。' },
   'goals.submit': { zh: '建立目標', en: 'Create Goal', ja: '目標を作成' },
   'goals.submitting': { zh: '送出中…', en: 'Submitting…', ja: '送信中…' },
   'goals.uploadProof': { zh: '上傳證明', en: 'Upload Proof', ja: '証明をアップロード' },
@@ -119,6 +120,32 @@ export const messages: Messages = {
   'goals.proofLink': { zh: '證明連結', en: 'Proof link', ja: '証明リンク' },
   'goals.selectFile': { zh: '選擇檔案', en: 'Select file', ja: 'ファイル選択' },
   'goals.submitProof': { zh: '送出證明', en: 'Submit proof', ja: '証明を送信' },
+  'goals.uploadTooLarge': { zh: '檔案過大，請壓縮後再上傳或改用「連結」上傳。', en: 'File too large. Please compress or use link upload.', ja: 'ファイルが大きすぎます。圧縮するかリンクでアップロードしてください。' },
+  'goals.fileSizeHint': { zh: '圖片會自動壓縮；影片/檔案建議 1MB 以下', en: 'Images auto-compress; video/file under 1MB recommended', ja: '画像は自動圧縮。動画・ファイルは1MB以下を推奨' },
+  'goals.pleaseSelectFile': { zh: '請選擇檔案', en: 'Please select a file', ja: 'ファイルを選択してください' },
+  'goals.pleaseEnterLink': { zh: '請填寫連結', en: 'Please enter the link', ja: 'リンクを入力してください' },
+  'goals.uploadFailed': { zh: '上傳失敗', en: 'Upload failed', ja: 'アップロードに失敗しました' },
+  'goals.createFailed': { zh: '新增失敗', en: 'Create failed', ja: '作成に失敗しました' },
+  'goals.updateFailed': { zh: '更新失敗', en: 'Update failed', ja: '更新に失敗しました' },
+  'goals.refundFailed': { zh: '申請失敗', en: 'Refund request failed', ja: '返金申請に失敗しました' },
+  'goals.refundProcessing': { zh: '處理中…', en: 'Processing…', ja: '処理中…' },
+  'goals.refundButton': { zh: '補完成並申請退款', en: 'Complete & request refund', ja: '達成済みにして返金申請' },
+  'goals.goalNotFound': { zh: '目標不存在', en: 'Goal not found', ja: '目標が見つかりません' },
+  'goals.goalEndedShort': { zh: '目標已結束', en: 'Goal has ended', ja: '目標は終了済み' },
+  'goals.missingGoalIdOrUrl': { zh: '缺少 goalId 或 url', en: 'Missing goal ID or URL', ja: '目標IDまたはURLが必要です' },
+  'goals.missingFormFields': { zh: '缺少 goalId / type / file', en: 'Missing goal ID, type or file', ja: '目標ID・タイプ・ファイルが必要です' },
+  'goals.insufficientBalance': { zh: '餘額不足，無法退款', en: 'Insufficient balance for refund', ja: '残高不足で返金できません' },
+  'goals.stripeRefundFailed': { zh: 'Stripe 退款失敗', en: 'Stripe refund failed', ja: 'Stripe返金に失敗しました' },
+  'goals.errTitleRequired': { zh: '請填寫主題', en: 'Please enter title', ja: 'タイトルを入力してください' },
+  'goals.errDescRequired': { zh: '請填寫具體描述', en: 'Please enter description', ja: '説明を入力してください' },
+  'goals.errDueRequired': { zh: '請選擇截止時間', en: 'Please select due date', ja: '期限を選択してください' },
+  'goals.errDuePast': { zh: '截止時間不能早於現在', en: 'Due date must be in the future', ja: '期限は未来の日時を選択してください' },
+  'goals.errPenaltyMin': { zh: '至少 $5', en: 'Minimum $5', ja: '最低$5' },
+  'goals.errPenaltyMax': { zh: '最多 $100', en: 'Maximum $100', ja: '最大$100' },
+  'goals.refundOnlyFailed': { zh: '僅未完成目標可申請退款', en: 'Only failed goals can request refund', ja: '未達成目標のみ返金申請可' },
+  'goals.uploadProofFirst': { zh: '請先上傳證明後再申請退款', en: 'Upload proof first, then request refund', ja: '証明をアップロードしてから返金申請してください' },
+  'goals.freeRefundLimit': { zh: '免費用戶僅能退上個月遞延目標的款', en: 'Free users can only refund last month\'s deferred goals', ja: '無料会員は先月分のみ返金可' },
+  'goals.preAuthFailed': { zh: '預授權失敗', en: 'Pre-auth failed', ja: '事前承認に失敗しました' },
 
   // Coach
   'coach.aiCoach': { zh: 'AI Coach', en: 'AI Coach', ja: 'AI Coach' },
@@ -247,6 +274,33 @@ export function getItemDisplayName(name: string, locale: Locale): string {
   const suffix = name.split(' ').slice(1).join(' ');
   const key = ITEM_NAME_KEYS[base];
   return key ? t(key, locale) + (suffix ? ' ' + suffix : '') : name;
+}
+
+/** 依 API 回傳的中文訊息對應到 i18n key */
+const API_MSG_MAP: Record<string, string> = {
+  '請先登入': 'auth.pleaseLogin',
+  '目標不存在': 'goals.goalNotFound',
+  '目標已結束': 'goals.goalEndedShort',
+  '已上傳過證明': 'goals.proofAlreadyUploaded',
+  '缺少 goalId 或 url': 'goals.missingGoalIdOrUrl',
+  '缺少 goalId / type / file': 'goals.missingFormFields',
+  '用戶不存在': 'auth.userNotFound',
+  '餘額不足，無法退款': 'goals.insufficientBalance',
+  'Stripe 退款失敗': 'goals.stripeRefundFailed',
+  '請先綁定信用卡才能建立目標': 'goals.bindCardFirst',
+  '本月已達 3 個目標上限': 'goals.monthLimit',
+  '截止時間不能早於現在': 'goals.errDuePast',
+  '僅進行中的目標可編輯': 'goals.onlyActiveEditable',
+  '僅未完成目標可申請退款': 'goals.refundOnlyFailed',
+  '請先上傳證明後再申請退款': 'goals.uploadProofFirst',
+  '免費用戶僅能退上個月遞延目標的款': 'goals.freeRefundLimit',
+  '預授權失敗': 'goals.preAuthFailed',
+  '申請失敗': 'goals.refundFailed',
+};
+
+export function mapApiErrorToMessage(msg: string, locale: Locale): string {
+  const key = API_MSG_MAP[msg];
+  return key ? t(key, locale) : msg;
 }
 
 export function t(key: string, locale: Locale, params?: Record<string, string | number>): string {

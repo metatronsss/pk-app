@@ -64,11 +64,11 @@ export default async function GoalDetailPage({
                             : 'bg-slate-100 text-slate-600'
                 }`}
               >
-                {goal.status === 'ACTIVE' && '進行中'}
-                {goal.status === 'COMPLETED' && '已完成'}
-                {goal.status === 'FAILED' && '未完成'}
-                {goal.status === 'REFUND_PENDING' && '待退款（60 天後）'}
-                {goal.status === 'REFUNDED' && '已退款'}
+                {goal.status === 'ACTIVE' && t('dashboard.statusActive', locale)}
+                {goal.status === 'COMPLETED' && t('dashboard.statusCompleted', locale)}
+                {goal.status === 'FAILED' && t('dashboard.statusFailed', locale)}
+                {goal.status === 'REFUND_PENDING' && t('goals.statusRefundPending60', locale)}
+                {goal.status === 'REFUNDED' && t('dashboard.statusRefunded', locale)}
               </span>
             </dd>
           </div>

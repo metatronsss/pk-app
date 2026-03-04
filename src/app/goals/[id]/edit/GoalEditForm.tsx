@@ -4,15 +4,10 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useState } from 'react';
-import { t } from '@/lib/i18n';
+import { useState, useMemo, useRef, useEffect } from 'react';
+import { t, mapApiErrorToMessage } from '@/lib/i18n';
 
-const schema = z.object({
-  title: z.string().min(1, '請填寫主題'),
-  description: z.string().min(1, '請填寫具體描述'),
-});
-
-type FormData = z.infer<typeof schema>;
+type FormData = { title: string; description: string };
 
 export default function GoalEditForm({
   goalId,
@@ -27,6 +22,20 @@ export default function GoalEditForm({
 }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const errorRef = useRef<HTMLDivElement>(null);
+
+  const schema = useMemo(
+    () =>
+      z.object({
+        title: z.string().min(1, t('goals.errTitleRequired', locale)),
+        description: z.string().min(1, t('goals.errDescRequired', locale)),
+      }),
+    [locale]
+  );
+
+  useEffect(() => {
+    if (error) errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, [error]);
 
   const {
     register,
@@ -47,19 +56,22 @@ export default function GoalEditForm({
       });
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
-        throw new Error(j.message || res.statusText);
+        const raw = (j.message as string) || res.statusText;
+        throw new Error(mapApiErrorToMessage(raw, locale));
       }
       router.push(`/goals/${goalId}`);
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : '更新失敗');
+      setError(e instanceof Error ? e.message : t('goals.updateFailed', locale));
     }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="card space-y-4">
       {error && (
-        <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>
+        <div ref={errorRef} role="alert" className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700">
+          {error}
+        </div>
       )}
       <div>
         <label className="block text-sm font-medium text-slate-700">{t('goals.goalTitle', locale)}</label>

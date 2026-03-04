@@ -4,26 +4,38 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useState } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useLocale } from '@/components/LocaleProvider';
-import { t } from '@/lib/i18n';
+import { t, mapApiErrorToMessage } from '@/lib/i18n';
 
-const schema = z.object({
-  title: z.string().min(1, '請填寫主題'),
-  description: z.string().min(1, '請填寫具體描述'),
-  dueAt: z.string().min(1, '請選擇截止時間').refine(
-    (val) => new Date(val) > new Date(),
-    '截止時間不能早於現在'
-  ),
-  penaltyUsd: z.number().min(5, '至少 $5').max(100, '最多 $100'),
-});
-
-type FormData = z.infer<typeof schema>;
+type FormData = { title: string; description: string; dueAt: string; penaltyUsd: number };
 
 export default function GoalForm({ userId }: { userId: string }) {
   const router = useRouter();
   const locale = useLocale();
   const [error, setError] = useState<string | null>(null);
+  const errorRef = useRef<HTMLDivElement>(null);
+
+  const schema = useMemo(
+    () =>
+      z.object({
+        title: z.string().min(1, t('goals.errTitleRequired', locale)),
+        description: z.string().min(1, t('goals.errDescRequired', locale)),
+        dueAt: z
+          .string()
+          .min(1, t('goals.errDueRequired', locale))
+          .refine((val) => new Date(val) > new Date(), t('goals.errDuePast', locale)),
+        penaltyUsd: z
+          .number()
+          .min(5, t('goals.errPenaltyMin', locale))
+          .max(100, t('goals.errPenaltyMax', locale)),
+      }),
+    [locale]
+  );
+
+  useEffect(() => {
+    if (error) errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, [error]);
 
   const {
     register,
@@ -51,22 +63,25 @@ export default function GoalForm({ userId }: { userId: string }) {
       });
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
-        throw new Error(j.message || res.statusText);
+        const raw = (j.message as string) || res.statusText;
+        throw new Error(mapApiErrorToMessage(raw, locale));
       }
       router.push('/dashboard');
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : '新增失敗');
+      setError(e instanceof Error ? e.message : t('goals.createFailed', locale));
     }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="card space-y-4">
       <div className="rounded-lg border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
-        ⚠️ 目標儲存後，截止日期與處罰金額無法調整，請確認後再送出。
+        ⚠️ {t('goals.createWarning', locale)}
       </div>
       {error && (
-        <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>
+        <div ref={errorRef} role="alert" className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700">
+          {error}
+        </div>
       )}
       <div>
         <label className="block text-sm font-medium text-slate-700">{t('goals.goalTitle', locale)}</label>
