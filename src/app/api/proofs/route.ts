@@ -4,7 +4,7 @@ import { getSessionUserId } from '@/lib/auth';
 import { penalizeOverdueGoals } from '@/lib/penalize';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
-import { startOfMonth, subMonths } from 'date-fns';
+import { addDays, startOfMonth, subMonths } from 'date-fns';
 import { stripe, isStripeEnabled, toStripeAmount } from '@/lib/stripe';
 import { affinityGainFromGoalCompletion, clampAffinity } from '@/lib/affinity';
 
