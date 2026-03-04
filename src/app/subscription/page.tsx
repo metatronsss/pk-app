@@ -7,13 +7,13 @@ import UpgradeButton from './UpgradeButton';
 export default async function SubscriptionPage({
   searchParams,
 }: {
-  searchParams: Promise<{ success?: string }>;
+  searchParams: Promise<{ success?: string }> | { success?: string };
 }) {
-  const [{ success }, user, locale] = await Promise.all([
-    searchParams.then((s) => s),
-    getSessionUser(),
-    getLocale(),
-  ]);
+  const [user, locale] = await Promise.all([getSessionUser(), getLocale()]);
+  const params = searchParams && typeof (searchParams as Promise<unknown>).then === 'function'
+    ? await (searchParams as Promise<{ success?: string }>)
+    : (searchParams as { success?: string }) ?? {};
+  const success = params.success;
   if (!user) {
     return (
       <div className="card">
