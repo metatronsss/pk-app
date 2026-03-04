@@ -2,8 +2,10 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { t } from '@/lib/i18n';
+import type { Locale } from '@/lib/i18n';
 
-export default function ProofUploadForm({ goalId }: { goalId: string }) {
+export default function ProofUploadForm({ goalId, locale }: { goalId: string; locale: Locale }) {
   const router = useRouter();
   const [type, setType] = useState<'image' | 'video' | 'file' | 'link'>('link');
   const [url, setUrl] = useState('');
@@ -106,7 +108,7 @@ export default function ProofUploadForm({ goalId }: { goalId: string }) {
         </div>
       ) : (
         <div>
-          <label className="block text-sm font-medium text-slate-700">選擇檔案</label>
+          <label className="block text-sm font-medium text-slate-700">{t('goals.selectFile', locale)}</label>
           <input
             type="file"
             accept={type === 'image' ? 'image/*' : type === 'video' ? 'video/*' : '*'}
@@ -117,14 +119,14 @@ export default function ProofUploadForm({ goalId }: { goalId: string }) {
       )}
       <div className="flex gap-2">
         <button type="submit" disabled={loading} className="btn-primary">
-          {loading ? '送出中…' : '送出證明'}
+          {loading ? t('goals.submitting', locale) : t('goals.submitProof', locale)}
         </button>
         <button
           type="button"
           onClick={() => router.back()}
           className="btn-secondary"
         >
-          取消
+          {t('goals.cancel', locale)}
         </button>
       </div>
     </form>

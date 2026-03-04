@@ -1,13 +1,17 @@
 'use client';
 
 import Link from 'next/link';
+import { useLocale } from '@/components/LocaleProvider';
+import { t } from '@/lib/i18n';
 
 type Props = {
   user: { name?: string | null; email?: string | null; subscription: string };
 };
 
 export default function HeaderClient({ user }: Props) {
-  const displayName = user.name ? `Hi, ${user.name}` : (user.email ?? '');
+  const locale = useLocale();
+  const hi = t('user.hi', locale);
+  const displayName = user.name ? `${hi}, ${user.name}` : (user.email ?? '');
 
   return (
     <div className="flex items-center gap-3 min-w-0">
@@ -20,14 +24,14 @@ export default function HeaderClient({ user }: Props) {
               : 'bg-slate-100 text-slate-600'
           }`}
         >
-          {user.subscription === 'PAID' ? '訂閱會員' : '免費'}
+          {user.subscription === 'PAID' ? t('user.proMember', locale) : t('user.freeMember', locale)}
         </span>
       </span>
       <Link
         href="/logout"
         className="text-sm text-slate-500 hover:text-slate-700"
       >
-        登出
+        {t('user.logout', locale)}
       </Link>
     </div>
   );

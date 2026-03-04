@@ -1,15 +1,17 @@
 import Link from 'next/link';
 import { getSessionUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { getLocale } from '@/lib/locale-server';
+import { t } from '@/lib/i18n';
 import { isStripeEnabled } from '@/lib/stripe';
 import GoalForm from './GoalForm';
 
 export default async function NewGoalPage() {
-  const user = await getSessionUser();
+  const [user, locale] = await Promise.all([getSessionUser(), getLocale()]);
   if (!user) {
     return (
       <div className="card">
-        <p>請先登入。</p>
+        <p>{t('auth.pleaseLogin', locale)}</p>
       </div>
     );
   }
@@ -31,18 +33,18 @@ export default async function NewGoalPage() {
 
   return (
     <div className="max-w-xl space-y-6">
-      <h1 className="text-2xl font-bold text-slate-800">新增目標</h1>
+      <h1 className="text-2xl font-bold text-slate-800">{t('goals.newGoal', locale)}</h1>
       {needsCard ? (
         <div className="card text-amber-800 bg-amber-50 border-amber-200">
-          <p className="font-medium">請先綁定信用卡</p>
-          <p className="mt-1 text-sm">建立目標需預授權處罰金額，請先至付款方式綁定信用卡。</p>
+          <p className="font-medium">{t('goals.paymentPrompt', locale)}</p>
+          <p className="mt-1 text-sm">{t('goals.bindCardFirst', locale)}</p>
           <Link href="/payment" className="mt-3 inline-block btn-primary">
-            前往綁定信用卡
+            {t('goals.goToPayment', locale)}
           </Link>
         </div>
       ) : !canAdd ? (
         <div className="card text-amber-800 bg-amber-50">
-          <p>本月已達 3 個目標上限，請下月再新增。</p>
+          <p>{t('goals.monthLimit', locale)}</p>
         </div>
       ) : (
         <GoalForm userId={user.id} />

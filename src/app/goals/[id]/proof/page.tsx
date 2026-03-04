@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getSessionUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { getLocale } from '@/lib/locale-server';
+import { t } from '@/lib/i18n';
 import ProofUploadForm from './ProofUploadForm';
 
 export default async function ProofUploadPage({
@@ -10,11 +12,11 @@ export default async function ProofUploadPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const user = await getSessionUser();
+  const [user, locale] = await Promise.all([getSessionUser(), getLocale()]);
   if (!user) {
     return (
       <div className="card">
-        <p>請先登入。</p>
+        <p>{t('auth.pleaseLogin', locale)}</p>
       </div>
     );
   }
@@ -28,9 +30,9 @@ export default async function ProofUploadPage({
   if (goal.status !== 'ACTIVE' && goal.status !== 'FAILED') {
     return (
       <div className="card">
-        <p>此目標已結束，無法上傳證明。</p>
+        <p>{t('goals.goalEnded', locale)}</p>
         <Link href={`/goals/${goal.id}`} className="btn-secondary mt-4">
-          回目標詳情
+          {t('goals.backToDetail', locale)}
         </Link>
       </div>
     );
@@ -38,9 +40,9 @@ export default async function ProofUploadPage({
   if (goal.proof) {
     return (
       <div className="card">
-        <p>已上傳過證明，無需重複上傳。</p>
+        <p>{t('goals.proofAlreadyUploaded', locale)}</p>
         <Link href={`/goals/${goal.id}`} className="btn-secondary mt-4">
-          回目標詳情
+          {t('goals.backToDetail', locale)}
         </Link>
       </div>
     );
@@ -49,11 +51,11 @@ export default async function ProofUploadPage({
   return (
     <div className="max-w-xl space-y-6">
       <Link href={`/goals/${goal.id}`} className="text-sm text-teal-600 hover:underline">
-        ← 回目標詳情
+        {t('goals.backToDetail', locale)}
       </Link>
-      <h1 className="text-2xl font-bold text-slate-800">上傳完成證明</h1>
+      <h1 className="text-2xl font-bold text-slate-800">{t('goals.uploadProofTitle', locale)}</h1>
       <p className="text-slate-600">{goal.title}</p>
-      <ProofUploadForm goalId={goal.id} />
+      <ProofUploadForm goalId={goal.id} locale={locale} />
     </div>
   );
 }

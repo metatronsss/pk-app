@@ -94,6 +94,31 @@ export const messages: Messages = {
   'goals.goalEnded': { zh: '此目標已結束，無法上傳證明。', en: 'This goal has ended. Cannot upload proof.', ja: 'この目標は終了済み。証明アップロード不可。' },
   'goals.deadline': { zh: '截止', en: 'Due', ja: '期限' },
   'goals.storageNote': { zh: '儲存後日期與處罰金額無法調整', en: 'Date and penalty cannot be changed after save', ja: '保存後は期限・罰金を変更できません' },
+  'goals.dueLabel': { zh: '截止', en: 'Due', ja: '期限' },
+  'goals.viewProof': { zh: '查看證明', en: 'View proof', ja: '証明を見る' },
+  'goals.proofUploaded': { zh: '已上傳證明', en: 'Proof uploaded', ja: '証明アップロード済み' },
+  'goals.proofType': { zh: '類型', en: 'Type', ja: 'タイプ' },
+  'goals.proofStatus': { zh: '證明狀態', en: 'Proof status', ja: '証明状態' },
+  'goals.status': { zh: '狀態', en: 'Status', ja: '状態' },
+  'goals.statusRefundPending60': { zh: '待退款（60 天後）', en: 'Refund Pending (60 days)', ja: '返金待ち（60日後）' },
+  'goals.paymentPrompt': { zh: '請先綁定信用卡', en: 'Bind card first', ja: 'カードを登録してください' },
+  'goals.goToPayment': { zh: '前往綁定信用卡', en: 'Go to Payment', ja: '支払いへ' },
+  'goals.uploadProofTitle': { zh: '上傳完成證明', en: 'Upload Proof', ja: '証明をアップロード' },
+  'goals.proofAlreadyUploaded': { zh: '已上傳過證明，無需重複上傳。', en: 'Proof already uploaded.', ja: '証明は既にアップロード済みです。' },
+  'goals.placeholderTitle': { zh: '例：每週運動 3 次', en: 'e.g. Exercise 3x/week', ja: '例：週3回運動' },
+  'goals.placeholderDesc': { zh: '例：健身房或跑步，每次至少 30 分鐘，上傳運動紀錄截圖', en: 'e.g. Gym or run, 30min each, upload screenshot', ja: '例：ジムorランニング、30分以上、スクショをアップロード' },
+  'goals.submitCreate': { zh: '建立目標', en: 'Create Goal', ja: '目標を作成' },
+  'goals.cancel': { zh: '取消', en: 'Cancel', ja: 'キャンセル' },
+  'goals.penaltyRange': { zh: '處罰金額（USD $5～$100）', en: 'Penalty (USD $5–$100)', ja: '罰金（$5～$100）' },
+  'goals.save': { zh: '儲存', en: 'Save', ja: '保存' },
+  'goals.proofTypeLabel': { zh: '證明類型', en: 'Proof type', ja: '証明タイプ' },
+  'goals.proofTypeLink': { zh: '連結（社群貼文、雲端連結等）', en: 'Link (social, cloud, etc.)', ja: 'リンク（SNS、クラウド等）' },
+  'goals.proofTypeImage': { zh: '圖片', en: 'Image', ja: '画像' },
+  'goals.proofTypeVideo': { zh: '影片', en: 'Video', ja: '動画' },
+  'goals.proofTypeFile': { zh: '檔案', en: 'File', ja: 'ファイル' },
+  'goals.proofLink': { zh: '證明連結', en: 'Proof link', ja: '証明リンク' },
+  'goals.selectFile': { zh: '選擇檔案', en: 'Select file', ja: 'ファイル選択' },
+  'goals.submitProof': { zh: '送出證明', en: 'Submit proof', ja: '証明を送信' },
 
   // Coach
   'coach.aiCoach': { zh: 'AI Coach', en: 'AI Coach', ja: 'AI Coach' },
@@ -108,6 +133,17 @@ export const messages: Messages = {
   'coach.equipEmpty': { zh: '空', en: 'Empty', ja: '空' },
   'coach.saveEquip': { zh: '儲存裝備', en: 'Save', ja: '保存' },
   'coach.saving': { zh: '儲存中...', en: 'Saving...', ja: '保存中...' },
+  'coach.type': { zh: '類型', en: 'Type', ja: 'タイプ' },
+  'coach.gender': { zh: '性別', en: 'Gender', ja: '性別' },
+  'coach.typeFamily': { zh: '家人', en: 'Family', ja: '家族' },
+  'coach.typeFriend': { zh: '朋友', en: 'Friend', ja: '友達' },
+  'coach.typeLover': { zh: '情人', en: 'Lover', ja: '恋人' },
+  'coach.genderMale': { zh: '男', en: 'Male', ja: '男' },
+  'coach.genderFemale': { zh: '女', en: 'Female', ja: '女' },
+  'coach.saveSettings': { zh: '儲存設定', en: 'Save Settings', ja: '設定を保存' },
+  'coach.chatPlaceholder': { zh: '輸入訊息…', en: 'Type a message…', ja: 'メッセージを入力…' },
+  'coach.chatSend': { zh: '送出', en: 'Send', ja: '送信' },
+  'coach.chatFallback': { zh: '加油，你可以的！', en: 'You can do it!', ja: '頑張ろう！' },
 
   // Shop
   'shop.title': { zh: '商城', en: 'Shop', ja: 'ショップ' },
@@ -125,12 +161,23 @@ export const messages: Messages = {
   'shop.affinityLockedTitle': { zh: '好感度不足，無法購買', en: 'Affinity too low to buy', ja: '好感度不足で購入不可' },
   'shop.owned': { zh: '已擁有', en: 'Owned', ja: '所持済み' },
   'shop.exchangeFailed': { zh: '兌換失敗', en: 'Exchange failed', ja: '交換に失敗しました' },
+  'shop.locked': { zh: '未解鎖', en: 'Locked', ja: '未解鎖' },
+  'shop.itemGloves': { zh: '手套', en: 'Gloves', ja: '手袋' },
+  'shop.itemScarf': { zh: '圍巾', en: 'Scarf', ja: 'マフラー' },
+  'shop.itemWhip': { zh: '皮鞭', en: 'Whip', ja: '鞭' },
+  'shop.itemHat': { zh: '帽子', en: 'Hat', ja: '帽子' },
+  'shop.itemProtractor': { zh: '量角器', en: 'Protractor', ja: '分度器' },
 
   // Payment
+  'payment.title': { zh: '付款方式', en: 'Payment', ja: '支払い' },
   'payment.backDashboard': { zh: '← 回 Dashboard', en: '← Back to Dashboard', ja: '← Dashboardへ' },
   'payment.bindCard': { zh: '綁定信用卡後，設定目標時會預授權處罰金額；未完成才會實際扣款，完成則釋放預授權。', en: 'Binding a card enables penalty pre-auth. Charge only on failure; release on completion.', ja: 'カード登録で罰金の事前承認。未達成時のみ課金、達成で解除。' },
   'payment.stripeKeys': { zh: '到 Stripe Dashboard → API Keys 複製測試金鑰。', en: 'Copy test keys from Stripe Dashboard → API Keys.', ja: 'Stripe Dashboard → API Keys でテストキーをコピー。' },
   'payment.cardNote': { zh: '設定目標時將使用此卡進行預授權。', en: 'This card will be used for goal pre-auth.', ja: 'このカードで目標の事前承認を行います。' },
+  'payment.stripeNotSet': { zh: 'Stripe 未設定', en: 'Stripe not configured', ja: 'Stripe未設定' },
+  'payment.addToEnv': { zh: '請在 .env 加入：', en: 'Add to .env:', ja: '.env に追加：' },
+  'payment.cardBound': { zh: '已綁定信用卡', en: 'Card bound', ja: 'カード登録済み' },
+  'payment.subscriptionNeedsStripe': { zh: '訂閱方案也需要 Stripe', en: 'Subscription also needs Stripe', ja: 'サブスクも Stripe 必要' },
 
   // Subscription
   'subscription.backDashboard': { zh: '← 回 Dashboard', en: '← Back to Dashboard', ja: '← Dashboardへ' },
@@ -138,6 +185,31 @@ export const messages: Messages = {
   'subscription.freeRefund': { zh: '僅能退「上個月」遞延目標的款', en: 'Refund last month\'s deferred only', ja: '先月分のみ返金可' },
   'subscription.freeCoach': { zh: 'AI Coach 基本功能', en: 'AI Coach basic', ja: 'AI Coach基本' },
   'subscription.proRefund': { zh: '可退「所有過往」遞延目標的款', en: 'Refund all past deferred', ja: '過去全て返金可' },
+  'subscription.pleaseLogin': { zh: '請先登入。', en: 'Please log in first.', ja: 'ログインしてください。' },
+  'subscription.success': { zh: '訂閱成功！您已是訂閱會員。', en: 'Subscribed! You are now a Pro member.', ja: '購読完了！Pro会員になりました。' },
+  'subscription.plans': { zh: '訂閱方案', en: 'Subscription Plans', ja: 'サブスクリプション' },
+  'subscription.free': { zh: '免費', en: 'Free', ja: '無料' },
+  'subscription.pro': { zh: '訂閱會員', en: 'Pro', ja: 'Pro' },
+  'subscription.perMonth': { zh: '/ 月', en: '/ month', ja: '/月' },
+  'subscription.freeFeature1': { zh: '每月 1～3 個目標', en: '1–3 goals per month', ja: '月1～3目標' },
+  'subscription.freeFeature2': { zh: '處罰押金機制', en: 'Penalty deposit', ja: '罰金保証金' },
+  'subscription.freeFeature3': { zh: '完成可 100% Refund', en: '100% refund on completion', ja: '達成で100%返金' },
+  'subscription.freeFeature4': { zh: '僅能退「上個月」遞延目標的款', en: 'Refund last month\'s deferred only', ja: '先月分のみ返金可' },
+  'subscription.freeFeature5': { zh: 'AI Coach 基本功能', en: 'AI Coach basic', ja: 'AI Coach基本' },
+  'subscription.proFeature1': { zh: '免費方案全部功能', en: 'All Free features', ja: '無料プラン全機能' },
+  'subscription.proFeature2': { zh: '可退「所有過往」遞延目標的款', en: 'Refund all past deferred', ja: '過去全て返金可' },
+  'subscription.proFeature3': { zh: '解鎖完整 Refund 歷史', en: 'Full refund history', ja: '返金履歴すべて' },
+  'subscription.proFeature4': { zh: '優先支援', en: 'Priority support', ja: '優先サポート' },
+  'subscription.currentPlan': { zh: '目前方案', en: 'Current plan', ja: '現在のプラン' },
+  'subscription.stripeNote': { zh: 'Stripe 設定說明', en: 'Stripe setup', ja: 'Stripe設定' },
+  'subscription.stripeEnv': { zh: '若「升級訂閱」按鈕無法使用，請在 .env 加入：', en: 'If upgrade button doesn\'t work, add to .env:', ja: 'アップグレードボタンが使えない場合、.env に追加：' },
+  'subscription.stripeHint': { zh: '到 Stripe Dashboard → Products → 新增 Product「PK Pro」→ 新增 Price $10/月 → 複製 Price ID（price_xxx）到 STRIPE_PRICE_ID。', en: 'Stripe Dashboard → Products → Add product "PK Pro" → Add price $10/month → Copy Price ID to STRIPE_PRICE_ID.', ja: 'Stripe Dashboard → Products → 商品追加「PK Pro」→ $10/月の価格追加 → Price ID を STRIPE_PRICE_ID に設定。' },
+
+  // User / Nav
+  'user.freeMember': { zh: '免費', en: 'Free', ja: '無料' },
+  'user.proMember': { zh: '訂閱會員', en: 'Pro', ja: 'Pro' },
+  'user.logout': { zh: '登出', en: 'Logout', ja: 'ログアウト' },
+  'user.hi': { zh: 'Hi', en: 'Hi', ja: 'こんにちは' },
 
   // Home
   'home.headline': { zh: '不夠痛 你就不會用', en: 'Not painful enough, you won\'t use it', ja: '痛くないと使わない' },
@@ -150,6 +222,22 @@ export const messages: Messages = {
   'common.detail': { zh: '詳情', en: 'Detail', ja: '詳細' },
   'common.edit': { zh: '編輯', en: 'Edit', ja: '編集' },
 };
+
+/** 道具 base 名稱 → i18n key */
+export const ITEM_NAME_KEYS: Record<string, string> = {
+  手套: 'shop.itemGloves',
+  圍巾: 'shop.itemScarf',
+  皮鞭: 'shop.itemWhip',
+  帽子: 'shop.itemHat',
+  量角器: 'shop.itemProtractor',
+};
+
+export function getItemDisplayName(name: string, locale: Locale): string {
+  const base = name.split(' ')[0] || name;
+  const suffix = name.split(' ').slice(1).join(' ');
+  const key = ITEM_NAME_KEYS[base];
+  return key ? t(key, locale) + (suffix ? ' ' + suffix : '') : name;
+}
 
 export function t(key: string, locale: Locale, params?: Record<string, string | number>): string {
   let str = messages[key]?.[locale] ?? messages[key]?.['zh'] ?? key;

@@ -66,6 +66,7 @@ export default async function CoachPage() {
             userId={user.id}
             coachType={coachType}
             coachGender={coachGender}
+            locale={locale}
           />
           <div className="relative h-32 w-32 mx-auto">
             <Image
@@ -98,6 +99,7 @@ export default async function CoachPage() {
             coachGender={coachGender}
             affinity={affinity}
             initialGreeting={initialGreeting}
+            locale={locale}
           />
         </div>
       </div>

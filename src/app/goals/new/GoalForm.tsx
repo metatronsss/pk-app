@@ -5,6 +5,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useState } from 'react';
+import { useLocale } from '@/components/LocaleProvider';
+import { t } from '@/lib/i18n';
 
 const schema = z.object({
   title: z.string().min(1, '請填寫主題'),
@@ -20,6 +22,7 @@ type FormData = z.infer<typeof schema>;
 
 export default function GoalForm({ userId }: { userId: string }) {
   const router = useRouter();
+  const locale = useLocale();
   const [error, setError] = useState<string | null>(null);
 
   const {
@@ -66,30 +69,30 @@ export default function GoalForm({ userId }: { userId: string }) {
         <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>
       )}
       <div>
-        <label className="block text-sm font-medium text-slate-700">目標主題</label>
+        <label className="block text-sm font-medium text-slate-700">{t('goals.goalTitle', locale)}</label>
         <input
           {...register('title')}
           className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
-          placeholder="例：每週運動 3 次"
+          placeholder={t('goals.placeholderTitle', locale)}
         />
         {errors.title && (
           <p className="mt-1 text-sm text-red-600">{errors.title.message}</p>
         )}
       </div>
       <div>
-        <label className="block text-sm font-medium text-slate-700">具體描述（如何證明完成）</label>
+        <label className="block text-sm font-medium text-slate-700">{t('goals.description', locale)}</label>
         <textarea
           {...register('description')}
           rows={3}
           className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
-          placeholder="例：健身房或跑步，每次至少 30 分鐘，上傳運動紀錄截圖"
+          placeholder={t('goals.placeholderDesc', locale)}
         />
         {errors.description && (
           <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
         )}
       </div>
       <div>
-        <label className="block text-sm font-medium text-slate-700">截止時間</label>
+        <label className="block text-sm font-medium text-slate-700">{t('goals.dueDate', locale)}</label>
         <input
           type="datetime-local"
           {...register('dueAt')}
@@ -105,7 +108,7 @@ export default function GoalForm({ userId }: { userId: string }) {
         )}
       </div>
       <div>
-        <label className="block text-sm font-medium text-slate-700">處罰金額（USD $5～$100）</label>
+        <label className="block text-sm font-medium text-slate-700">{t('goals.penaltyRange', locale)}</label>
         <input
           type="number"
           {...register('penaltyUsd', { valueAsNumber: true })}
@@ -120,14 +123,14 @@ export default function GoalForm({ userId }: { userId: string }) {
       </div>
       <div className="flex gap-2">
         <button type="submit" disabled={isSubmitting} className="btn-primary">
-          {isSubmitting ? '送出中…' : '建立目標'}
+          {isSubmitting ? t('goals.submitting', locale) : t('goals.submitCreate', locale)}
         </button>
         <button
           type="button"
           onClick={() => router.back()}
           className="btn-secondary"
         >
-          取消
+          {t('goals.cancel', locale)}
         </button>
       </div>
     </form>

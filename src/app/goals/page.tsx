@@ -1,16 +1,17 @@
 import Link from 'next/link';
 import { getSessionUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { penalizeOverdueGoals } from '@/lib/penalize';
+import { getLocale } from '@/lib/locale-server';
+import { t } from '@/lib/i18n';
 import { format } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
 
 export default async function GoalsPage() {
-  const user = await getSessionUser();
+  const [user, locale] = await Promise.all([getSessionUser(), getLocale()]);
   if (!user) {
     return (
       <div className="card">
-        <p>請先登入。</p>
+        <p>{t('auth.pleaseLogin', locale)}</p>
       </div>
     );
   }
@@ -52,7 +53,7 @@ export default async function GoalsPage() {
                   </Link>
                   <p className="mt-1 text-sm text-slate-600">{g.description}</p>
                   <p className="mt-2 text-xs text-slate-500">
-                    截止 {format(g.dueAt, 'yyyy/MM/dd HH:mm', { locale: zhTW })} · 處罰 $ {(g.penaltyCents / 100).toFixed(2)} USD
+                    {t('goals.dueLabel', locale)} {format(g.dueAt, 'yyyy/MM/dd HH:mm', { locale: zhTW })} · {t('goals.penalty', locale)} $ {(g.penaltyCents / 100).toFixed(2)} USD
                   </p>
                 </div>
                 <span
@@ -79,16 +80,16 @@ export default async function GoalsPage() {
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
                 <Link href={`/goals/${g.id}`} className="btn-secondary text-sm">
-                  詳情
+                  {t('common.detail', locale)}
                 </Link>
                 {g.status === 'ACTIVE' && (
                   <Link href={`/goals/${g.id}/edit`} className="btn-secondary text-sm">
-                    編輯
+                    {t('common.edit', locale)}
                   </Link>
                 )}
                 {(g.status === 'ACTIVE' || g.status === 'FAILED') && !g.proof && (
                   <Link href={`/goals/${g.id}/proof`} className="btn-primary text-sm">
-                    {g.status === 'FAILED' ? '上傳證明並退款' : '上傳證明'}
+                    {g.status === 'FAILED' ? t('goals.uploadProofRefund', locale) : t('goals.uploadProof', locale)}
                   </Link>
                 )}
               </div>

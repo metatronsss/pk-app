@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useState } from 'react';
+import { t } from '@/lib/i18n';
 
 const schema = z.object({
   title: z.string().min(1, '請填寫主題'),
@@ -17,10 +18,12 @@ export default function GoalEditForm({
   goalId,
   title,
   description,
+  locale,
 }: {
   goalId: string;
   title: string;
   description: string;
+  locale: import('@/lib/i18n').Locale;
 }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
@@ -59,23 +62,23 @@ export default function GoalEditForm({
         <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>
       )}
       <div>
-        <label className="block text-sm font-medium text-slate-700">目標主題</label>
+        <label className="block text-sm font-medium text-slate-700">{t('goals.goalTitle', locale)}</label>
         <input
           {...register('title')}
           className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
-          placeholder="例：每週運動 3 次"
+          placeholder={t('goals.placeholderTitle', locale)}
         />
         {errors.title && (
           <p className="mt-1 text-sm text-red-600">{errors.title.message}</p>
         )}
       </div>
       <div>
-        <label className="block text-sm font-medium text-slate-700">具體描述（如何證明完成）</label>
+        <label className="block text-sm font-medium text-slate-700">{t('goals.description', locale)}</label>
         <textarea
           {...register('description')}
           rows={3}
           className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
-          placeholder="例：健身房或跑步，每次至少 30 分鐘，上傳運動紀錄截圖"
+          placeholder={t('goals.placeholderDesc', locale)}
         />
         {errors.description && (
           <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
@@ -83,14 +86,14 @@ export default function GoalEditForm({
       </div>
       <div className="flex gap-2">
         <button type="submit" disabled={isSubmitting} className="btn-primary">
-          {isSubmitting ? '儲存中…' : '儲存'}
+          {isSubmitting ? t('coach.saving', locale) : t('goals.save', locale)}
         </button>
         <button
           type="button"
           onClick={() => router.back()}
           className="btn-secondary"
         >
-          取消
+          {t('goals.cancel', locale)}
         </button>
       </div>
     </form>

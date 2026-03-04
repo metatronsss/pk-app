@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { t } from '@/lib/i18n';
+import { t, getItemDisplayName } from '@/lib/i18n';
 import type { Locale } from '@/lib/i18n';
 
 type ShopItem = {
@@ -63,6 +63,7 @@ export default function ShopGrid({
       {items.map((item) => {
         const tier = item.tier ?? Math.floor((item.sortOrder ?? 0) / 5);
         const isVisible = tier <= highestTier;
+        const isLocked = !isVisible;
         const isAffinityLocked = userAffinity < item.affinityRequired;
         const isOwned = ownedSet.has(item.id);
         const canBuy = isVisible && !isAffinityLocked && !isOwned && userPoints >= item.pointsCost;
@@ -113,7 +114,7 @@ export default function ShopGrid({
                 onClick={() => handlePurchase(item)}
                 disabled={!canBuy || !!purchasing}
                 className="mt-2 btn-primary text-xs py-1 px-2 disabled:opacity-50"
-                title={!canBuy && isAffinityLocked ? t('shop.affinityLockedTitle', locale) : undefined}
+                title={!canBuy ? (isLocked ? t('shop.locked', locale) : t('shop.affinityLockedTitle', locale)) : undefined}
               >
                 {purchasing === item.id ? t('shop.exchanging', locale) : canBuy ? t('shop.exchange', locale) : t('shop.affinityLocked', locale)}
               </button>

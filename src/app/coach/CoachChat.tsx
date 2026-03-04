@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { t } from '@/lib/i18n';
+import type { Locale } from '@/lib/i18n';
 
 type Message = { role: 'user' | 'assistant'; content: string };
 
@@ -10,12 +12,14 @@ export default function CoachChat({
   coachGender,
   affinity,
   initialGreeting,
+  locale,
 }: {
   userId: string;
   coachType: string;
   coachGender: string;
   affinity: number;
   initialGreeting: string;
+  locale: Locale;
 }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -95,12 +99,12 @@ export default function CoachChat({
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="輸入訊息…"
+          placeholder={t('coach.chatPlaceholder', locale)}
           className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm"
           disabled={loading}
         />
         <button type="submit" disabled={loading} className="btn-primary">
-          送出
+          {t('coach.chatSend', locale)}
         </button>
       </form>
     </div>
