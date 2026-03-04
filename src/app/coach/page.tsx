@@ -94,6 +94,7 @@ export default async function CoachPage() {
         <div className="card md:col-span-2">
           <h2 className="mb-4 font-semibold text-slate-700">{t('coach.chat', locale)}</h2>
           <CoachChat
+            key={locale}
             userId={user.id}
             coachType={coachType}
             coachGender={coachGender}

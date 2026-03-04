@@ -218,6 +218,7 @@ export const messages: Messages = {
   'subscription.errorNoUrl': { zh: '未取得結帳連結', en: 'No checkout URL', ja: 'URLを取得できませんでした' },
   'subscription.errorNetwork': { zh: '連線失敗', en: 'Connection failed', ja: '接続に失敗しました' },
   'subscription.loadError': { zh: '載入發生錯誤', en: 'Loading error', ja: '読み込みエラー' },
+  'subscription.loadErrorDetail': { zh: '請稍後再試或返回首頁。', en: 'Please try again later or return to the dashboard.', ja: 'しばらくしてからお試しいただくか、ダッシュボードへお戻りください。' },
   'common.retry': { zh: '重試', en: 'Retry', ja: '再試行' },
 
   // Home

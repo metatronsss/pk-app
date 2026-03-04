@@ -16,7 +16,7 @@ export default function SubscriptionError({
   return (
     <div className="card max-w-xl">
       <h2 className="text-lg font-semibold text-red-700">{t('subscription.loadError', locale)}</h2>
-      <p className="mt-2 text-sm text-slate-600">{error.message}</p>
+      <p className="mt-2 text-sm text-slate-600">{t('subscription.loadErrorDetail', locale)}</p>
       <div className="mt-4 flex gap-2">
         <button onClick={reset} className="btn-primary">
           {t('common.retry', locale)}

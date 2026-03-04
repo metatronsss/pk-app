@@ -22,7 +22,7 @@ export default async function SubscriptionPage({
     );
   }
 
-  const isPaid = user.subscription === 'PAID';
+  const isPaid = (user.subscription ?? 'FREE') === 'PAID';
 
   return (
     <div className="max-w-2xl space-y-8">

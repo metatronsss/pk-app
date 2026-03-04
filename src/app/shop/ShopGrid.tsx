@@ -68,18 +68,21 @@ export default function ShopGrid({
         const isOwned = ownedSet.has(item.id);
         const canBuy = isVisible && !isAffinityLocked && !isOwned && userPoints >= item.pointsCost;
 
-        if (!isVisible) return null;
-
         const types = (item.itemType || '').split(',').filter(Boolean);
-        const showEffects = types.length > 0;
+        const showEffects = types.length > 0 && isVisible;
 
         return (
           <div
             key={item.id}
-            className={`card flex flex-col items-center p-3 ${
-              isAffinityLocked && !isOwned ? 'opacity-70' : ''
+            className={`card flex flex-col items-center p-3 relative ${
+              isLocked ? 'opacity-60' : isAffinityLocked && !isOwned ? 'opacity-80' : ''
             }`}
           >
+            {isLocked && (
+              <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-slate-900/40 z-10" title={t('shop.locked', locale)}>
+                <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm2-2v2h6V7a3 3 0 00-6 0z" clipRule="evenodd" /></svg>
+              </div>
+            )}
             <div className="relative h-16 w-16 rounded-lg bg-slate-100 flex items-center justify-center overflow-hidden">
               {item.imageUrl ? (
                 <Image src={item.imageUrl} alt={getItemDisplayName(item.name, locale)} width={64} height={64} />
@@ -90,7 +93,7 @@ export default function ShopGrid({
               )}
             </div>
             <p className="mt-2 text-center text-xs sm:text-sm font-medium text-slate-700 break-words">
-              {item.name}
+              {getItemDisplayName(item.name, locale)}
             </p>
             {showEffects && (
               <div className="text-xs text-slate-600 space-y-0.5">
@@ -110,14 +113,18 @@ export default function ShopGrid({
               <p className="text-xs text-slate-500">{t('shop.affinityRequired', locale, { n: String(item.affinityRequired) })}</p>
             )}
             {!isOwned && (
-              <button
-                onClick={() => handlePurchase(item)}
-                disabled={!canBuy || !!purchasing}
-                className="mt-2 btn-primary text-xs py-1 px-2 disabled:opacity-50"
-                title={!canBuy ? (isLocked ? t('shop.locked', locale) : t('shop.affinityLockedTitle', locale)) : undefined}
-              >
-                {purchasing === item.id ? t('shop.exchanging', locale) : canBuy ? t('shop.exchange', locale) : t('shop.affinityLocked', locale)}
-              </button>
+              isLocked ? (
+                <span className="mt-2 text-xs text-slate-500 font-medium">{t('shop.locked', locale)}</span>
+              ) : (
+                <button
+                  onClick={() => handlePurchase(item)}
+                  disabled={!canBuy || !!purchasing}
+                  className="mt-2 btn-primary text-xs py-1 px-2 disabled:opacity-50"
+                  title={!canBuy ? t('shop.affinityLockedTitle', locale) : undefined}
+                >
+                  {purchasing === item.id ? t('shop.exchanging', locale) : canBuy ? t('shop.exchange', locale) : t('shop.affinityLocked', locale)}
+                </button>
+              )
             )}
             {isOwned && (
               <span className="mt-2 text-xs text-teal-600 font-medium">{t('shop.owned', locale)}</span>
