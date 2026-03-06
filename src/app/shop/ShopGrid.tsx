@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { t, getItemDisplayName } from '@/lib/i18n';
+import { t, getItemDisplayName, getItemEffectTooltip } from '@/lib/i18n';
 import type { Locale } from '@/lib/i18n';
 
 type ShopItem = {
@@ -70,16 +70,24 @@ export default function ShopGrid({
 
         const types = (item.itemType || '').split(',').filter(Boolean);
         const showEffects = types.length > 0 && isVisible;
+        const effectTooltip = getItemEffectTooltip(item.itemType ?? '', item.sortOrder ?? 0, locale);
+        const hoverTitle = effectTooltip
+          ? `${getItemDisplayName(item.name, locale)}：${effectTooltip}`
+          : getItemDisplayName(item.name, locale);
 
         return (
           <div
             key={item.id}
+            title={hoverTitle}
             className={`card flex flex-col items-center p-3 relative ${
               isLocked ? 'opacity-60' : isAffinityLocked && !isOwned ? 'opacity-80' : ''
             }`}
           >
             {isLocked && (
-              <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-slate-900/40 z-10" title={t('shop.locked', locale)}>
+              <div
+                className="absolute inset-0 flex items-center justify-center rounded-lg bg-slate-900/40 z-10"
+                title={effectTooltip ? `${t('shop.locked', locale)} · ${effectTooltip}` : t('shop.locked', locale)}
+              >
                 <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm2-2v2h6V7a3 3 0 00-6 0z" clipRule="evenodd" /></svg>
               </div>
             )}

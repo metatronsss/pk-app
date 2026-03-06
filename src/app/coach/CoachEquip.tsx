@@ -3,12 +3,12 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { getItemImageUrl } from '@/lib/shop-items';
-import { t } from '@/lib/i18n';
+import { t, getItemDisplayName, getItemEffectTooltip } from '@/lib/i18n';
 import type { Locale } from '@/lib/i18n';
 
 const MAX_SLOTS = 5;
 
-type OwnedItem = { id: string; shopItemId: string; shopItem: { name: string; sortOrder: number } };
+type OwnedItem = { id: string; shopItemId: string; shopItem: { name: string; sortOrder: number; itemType?: string | null } };
 
 export default function CoachEquip({
   userId,
@@ -49,37 +49,52 @@ export default function CoachEquip({
   };
 
   const ownedById = new Map(ownedItems.map((o) => [o.shopItemId, o]));
+  /** 每個 slot 可選的項目：已選在其他 slot 的不可再選（同一道具不能重複裝備）；當前 slot 已選的仍要顯示以便保留 */
+  const getOptionsForSlot = (idx: number) =>
+    ownedItems.filter(
+      (o) => slots[idx] === o.shopItemId || !slots.some((id, j) => j !== idx && id === o.shopItemId)
+    );
 
   return (
     <div className="space-y-2">
       <h3 className="text-sm font-medium text-slate-700">{t('coach.equipTitle', locale)}</h3>
       <div className="flex flex-wrap gap-2">
-        {Array.from({ length: MAX_SLOTS }, (_, i) => (
-          <div key={i} className="relative h-14 w-14 rounded-lg border border-slate-200 bg-slate-50 flex items-center justify-center">
-            {slots[i] ? (
-              <Image
-                src={getItemImageUrl(ownedById.get(slots[i])?.shopItem?.name || '') || '/shop/Shop_Protractor.svg'}
-                alt=""
-                width={48}
-                height={48}
-              />
-            ) : (
-              <span className="text-slate-400 text-xs">{t('coach.equipEmpty', locale)}</span>
-            )}
-            <select
-              value={slots[i] || ''}
-              onChange={(e) => setSlot(i, e.target.value)}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+        {Array.from({ length: MAX_SLOTS }, (_, i) => {
+          const item = slots[i] ? ownedById.get(slots[i]) : null;
+          const tooltip = item?.shopItem
+            ? getItemEffectTooltip(item.shopItem.itemType ?? '', item.shopItem.sortOrder ?? 0, locale)
+            : '';
+          return (
+            <div
+              key={i}
+              className="relative h-14 w-14 rounded-lg border border-slate-200 bg-slate-50 flex items-center justify-center"
+              title={tooltip ? `${getItemDisplayName(item?.shopItem?.name ?? '', locale)}：${tooltip}` : undefined}
             >
-              <option value="">— {t('coach.equipEmpty', locale)} —</option>
-              {ownedItems.map((o) => (
-                <option key={o.id} value={o.shopItemId}>
-                  {o.shopItem?.name || o.shopItemId}
-                </option>
-              ))}
-            </select>
-          </div>
-        ))}
+              {slots[i] ? (
+                <Image
+                  src={getItemImageUrl(ownedById.get(slots[i])?.shopItem?.name || '') || '/shop/Shop_Protractor.svg'}
+                  alt=""
+                  width={48}
+                  height={48}
+                />
+              ) : (
+                <span className="text-slate-400 text-xs">{t('coach.equipEmpty', locale)}</span>
+              )}
+              <select
+                value={slots[i] || ''}
+                onChange={(e) => setSlot(i, e.target.value)}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              >
+                <option value="">— {t('coach.equipEmpty', locale)} —</option>
+                {getOptionsForSlot(i).map((o) => (
+                  <option key={o.id} value={o.shopItemId}>
+                    {getItemDisplayName(o.shopItem?.name ?? o.shopItemId, locale)}
+                  </option>
+                ))}
+              </select>
+            </div>
+          );
+        })}
       </div>
       <button
         type="button"

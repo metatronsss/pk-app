@@ -28,7 +28,7 @@ export default async function CoachPage() {
     }),
     prisma.userItem.findMany({
       where: { userId: user.id },
-      include: { shopItem: { select: { name: true, sortOrder: true } } },
+      include: { shopItem: { select: { name: true, sortOrder: true, itemType: true } } },
     }),
   ]);
 

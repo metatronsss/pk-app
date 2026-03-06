@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ message: '最多裝備 5 個道具' }, { status: 400 });
   }
 
-  const validIds = shopItemIds.slice(0, MAX_EQUIPPED).filter(Boolean);
+  const validIds = [...new Set(shopItemIds.slice(0, MAX_EQUIPPED).filter(Boolean))];
   const owned = await prisma.userItem.findMany({
     where: { userId, shopItemId: { in: validIds } },
     select: { shopItemId: true },

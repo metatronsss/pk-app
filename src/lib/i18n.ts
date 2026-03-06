@@ -280,6 +280,18 @@ export function getItemDisplayName(name: string, locale: Locale): string {
   return key ? t(key, locale) + (suffix ? ' ' + suffix : '') : name;
 }
 
+/** 依 itemType、sortOrder 產生道具效果說明（用於 hover tooltip） */
+export function getItemEffectTooltip(itemType: string, sortOrder: number, locale: Locale): string {
+  const types = (itemType || '').split(',').filter(Boolean);
+  if (types.length === 0) return '';
+  const tier = Math.floor((sortOrder ?? 0) / 5);
+  const parts: string[] = [];
+  if (types.includes('penalty_reduction')) parts.push(t('shop.penaltyReduce', locale, { p: String(95 - tier * 2) }));
+  if (types.includes('grace_period')) parts.push(t('shop.gracePeriod', locale, { d: String(1 + tier) }));
+  if (types.includes('affinity_boost')) parts.push(t('shop.affinityBoost', locale, { a: String(5 + tier * 5) }));
+  return parts.join(' · ');
+}
+
 /** 依 API 回傳的中文訊息對應到 i18n key */
 const API_MSG_MAP: Record<string, string> = {
   '請先登入': 'auth.pleaseLogin',
