@@ -45,10 +45,11 @@ export default function CoachChat({
     setLoading(true);
 
     try {
+      const history = [...messages, { role: 'user' as const, content: text }].slice(0, -1);
       const res = await fetch('/api/coach/talk', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text, locale }),
+        body: JSON.stringify({ message: text, locale, history }),
       });
       const data = await res.json().catch(() => ({}));
       const reply = data.reply ?? t('coach.chatFallback', locale);

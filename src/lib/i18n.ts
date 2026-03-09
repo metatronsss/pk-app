@@ -280,9 +280,22 @@ export function getItemDisplayName(name: string, locale: Locale): string {
   return key ? t(key, locale) + (suffix ? ' ' + suffix : '') : name;
 }
 
+/** 依 sortOrder 推斷效果類型（與 shop-items 的 5 種裝飾對應） */
+const EFFECT_TYPES_BY_POS: string[][] = [
+  ['penalty_reduction'],
+  ['grace_period'],
+  ['affinity_boost', 'penalty_reduction', 'grace_period'],
+  ['affinity_boost'],
+  ['penalty_reduction', 'grace_period'],
+];
+
 /** 依 itemType、sortOrder 產生道具效果說明（用於 hover tooltip） */
 export function getItemEffectTooltip(itemType: string, sortOrder: number, locale: Locale): string {
-  const types = (itemType || '').split(',').filter(Boolean);
+  let types = (itemType || '').split(',').filter(Boolean);
+  const hasEffect = types.some((x) => ['penalty_reduction', 'grace_period', 'affinity_boost'].includes(x));
+  if (!hasEffect && sortOrder >= 0 && sortOrder < 50) {
+    types = EFFECT_TYPES_BY_POS[sortOrder % 5] ?? [];
+  }
   if (types.length === 0) return '';
   const tier = Math.floor((sortOrder ?? 0) / 5);
   const parts: string[] = [];
