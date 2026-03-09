@@ -71,9 +71,8 @@ export default function ShopGrid({
         const types = (item.itemType || '').split(',').filter(Boolean);
         const showEffects = types.length > 0 && isVisible;
         const effectTooltip = getItemEffectTooltip(item.itemType ?? '', item.sortOrder ?? 0, locale);
-        const hoverTitle = effectTooltip
-          ? `${getItemDisplayName(item.name, locale)}：${effectTooltip}`
-          : getItemDisplayName(item.name, locale);
+        const displayName = getItemDisplayName(item.name, locale);
+        const hoverTitle = effectTooltip ? `${displayName}：${effectTooltip}` : displayName;
 
         return (
           <div
@@ -91,9 +90,9 @@ export default function ShopGrid({
                 <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm2-2v2h6V7a3 3 0 00-6 0z" clipRule="evenodd" /></svg>
               </div>
             )}
-            <div className="relative h-16 w-16 rounded-lg bg-slate-100 flex items-center justify-center overflow-hidden">
+            <div className="relative h-16 w-16 rounded-lg bg-slate-100 flex items-center justify-center overflow-hidden" title={hoverTitle}>
               {item.imageUrl ? (
-                <Image src={item.imageUrl} alt={getItemDisplayName(item.name, locale)} width={64} height={64} />
+                <Image src={item.imageUrl} alt={displayName} width={64} height={64} title={hoverTitle} />
               ) : (
                 <span className="text-2xl text-slate-400">
                   {item.name === '?' ? '?' : item.name.charAt(0)}

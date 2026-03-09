@@ -61,14 +61,18 @@ export default function CoachEquip({
       <div className="flex flex-wrap gap-2">
         {Array.from({ length: MAX_SLOTS }, (_, i) => {
           const item = slots[i] ? ownedById.get(slots[i]) : null;
-          const tooltip = item?.shopItem
+          const effectText = item?.shopItem
             ? getItemEffectTooltip(item.shopItem.itemType ?? '', item.shopItem.sortOrder ?? 0, locale)
             : '';
+          const displayName = item?.shopItem ? getItemDisplayName(item.shopItem.name ?? '', locale) : '';
+          const slotTitle = displayName
+            ? (effectText ? `${displayName}：${effectText}` : displayName)
+            : undefined;
           return (
             <div
               key={i}
               className="relative h-14 w-14 rounded-lg border border-slate-200 bg-slate-50 flex items-center justify-center"
-              title={tooltip ? `${getItemDisplayName(item?.shopItem?.name ?? '', locale)}：${tooltip}` : undefined}
+              title={slotTitle}
             >
               {slots[i] ? (
                 <Image
@@ -76,6 +80,7 @@ export default function CoachEquip({
                   alt=""
                   width={48}
                   height={48}
+                  title={slotTitle}
                 />
               ) : (
                 <span className="text-slate-400 text-xs">{t('coach.equipEmpty', locale)}</span>
@@ -84,6 +89,7 @@ export default function CoachEquip({
                 value={slots[i] || ''}
                 onChange={(e) => setSlot(i, e.target.value)}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                title={slotTitle}
               >
                 <option value="">— {t('coach.equipEmpty', locale)} —</option>
                 {getOptionsForSlot(i).map((o) => (
