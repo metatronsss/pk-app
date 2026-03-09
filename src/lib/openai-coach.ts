@@ -98,7 +98,8 @@ export async function getChatGPTReply(
     const content = completion.choices[0]?.message?.content?.trim();
     return content ?? null;
   } catch (err) {
-    console.error('[Coach ChatGPT]', err instanceof Error ? err.message : err);
+    const e = err as { message?: string; status?: number; code?: string };
+    console.error('[Coach ChatGPT]', e?.message || err, { status: e?.status, code: e?.code });
     return null;
   }
 }

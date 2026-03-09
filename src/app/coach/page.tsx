@@ -90,6 +90,9 @@ export default async function CoachPage() {
           <Link href="/dashboard" className="block text-sm text-teal-600 hover:underline">
             {t('coach.backDashboard', locale)}
           </Link>
+          <Link href="/coach/test-openai" className="block text-xs text-slate-500 hover:underline">
+            OpenAI 連線測試
+          </Link>
         </div>
         <div className="card md:col-span-2">
           <h2 className="mb-4 font-semibold text-slate-700">{t('coach.chat', locale)}</h2>

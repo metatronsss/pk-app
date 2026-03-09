@@ -175,6 +175,9 @@ export const messages: Messages = {
   'coach.chatPlaceholder': { zh: '輸入訊息…', en: 'Type a message…', ja: 'メッセージを入力…' },
   'coach.chatSend': { zh: '送出', en: 'Send', ja: '送信' },
   'coach.chatFallback': { zh: '加油，你可以的！', en: 'You can do it!', ja: '頑張ろう！' },
+  'coach.backCoach': { zh: '回 Coach', en: 'Back to Coach', ja: 'Coachへ戻る' },
+  'coach.testOpenAITitle': { zh: 'OpenAI 連線測試', en: 'OpenAI Connection Test', ja: 'OpenAI接続テスト' },
+  'coach.testOpenAIDesc': { zh: '此頁面會呼叫 /api/coach/test-openai 檢查 OPENAI_API_KEY 是否設定以及 API 是否可用。', en: 'This page calls /api/coach/test-openai to check if OPENAI_API_KEY is set and the API works.', ja: 'このページは /api/coach/test-openai を呼び、OPENAI_API_KEY が設定されているか・API が動作するかを確認します。' },
 
   // Shop
   'shop.title': { zh: '商城', en: 'Shop', ja: 'ショップ' },
