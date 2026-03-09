@@ -36,6 +36,7 @@ export async function POST(request: NextRequest) {
   if (gptReply) {
     reply = gptReply;
   } else {
+    console.warn('[Coach talk] ChatGPT returned null, falling back to rules');
     reply = getReply(message, coachType, coachGender, locale);
   }
 

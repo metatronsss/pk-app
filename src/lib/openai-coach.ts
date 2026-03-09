@@ -29,15 +29,12 @@ function buildSystemPrompt(coachType: CoachType, coachGender: CoachGender, local
 
 ${persona}
 
-重要規則：
-- 一律使用「${lang}」回覆，保持簡短（1～3 句為佳）。
-- 若用戶問到上傳證明、目標、退款、拖延等，請引導他們到對應功能。
-- 上傳證明：到目標詳情頁點「上傳證明」，可貼連結或上傳圖片/檔案。
-- 目標：每月 1～3 個，設處罰金額、截止時間。
-- 退款：完成後可 100% 退款；補完成也可申請（免費用戶有條件）。
-- 拖延：鼓勵下次截止前上傳，補完成仍可退。
+規則：
+- 一律用「${lang}」回覆，1～3 句，口語化、有溫度。
+- 不要像客服或腳本，要像真人在聊天，可帶表情符號、語氣詞。
+- 若問到：上傳證明→目標詳情頁點「上傳證明」；目標→每月1～3個、設處罰與截止；退款→完成可100%退、補完成也可申請；拖延→鼓勵下次截止前上傳。
 
-保持角色一致性，不要打破人設。`;
+用你的話自然回應，不要照抄規則。`;
 }
 
 type ChatMessage = { role: 'user' | 'assistant'; content: string };
@@ -57,7 +54,10 @@ export async function getChatGPTReply(
   history?: ChatMessage[]
 ): Promise<string | null> {
   const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey?.trim()) return null;
+  if (!apiKey?.trim()) {
+    console.warn('[Coach ChatGPT] OPENAI_API_KEY not set, using rule-based reply');
+    return null;
+  }
 
   const client = new OpenAI({ apiKey });
   const systemPrompt = buildSystemPrompt(coachType, coachGender, locale);
@@ -77,11 +77,12 @@ export async function getChatGPTReply(
       model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
       messages,
       max_tokens: 200,
-      temperature: 0.7,
+      temperature: 0.8,
     });
     const content = completion.choices[0]?.message?.content?.trim();
     return content ?? null;
-  } catch {
+  } catch (err) {
+    console.error('[Coach ChatGPT]', err instanceof Error ? err.message : err);
     return null;
   }
 }
